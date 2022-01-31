@@ -378,3 +378,21 @@ void shift_right(uint16_t instruction) {
 	uint8_t result = value >> 1;
 	write_register_bank(vx, result);
 }
+
+/* Misc */
+
+/*
+ * CXNN
+ * RAND VX NN
+ * Generate a random byte, and perform a bitwise AND between it and NN.
+ * Set VX to the result.
+ */
+void set_register_to_bitmasked_rand(uint16_t instruction) {
+	uint8_t vx = extract_register_from_xnn(instruction);
+	uint8_t bitmask = extract_immediate_from_xnn(instruction);
+
+	uint8_t random_byte = set_register_to_bitmasked_rand() & 0xF; // NOLINT(cert-msc50-cpp)
+	uint8_t result = random_byte & bitmask;
+
+	write_register_bank(vx, result);
+}

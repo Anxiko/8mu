@@ -3,6 +3,8 @@
 
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
+
 #include "stack.h"
 #include "screen.h"
 #include "registers.h"
