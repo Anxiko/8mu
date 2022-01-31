@@ -175,14 +175,88 @@ void set_index_register(uint16_t instruction) {
 /*
  * 7XNN
  * ADDI VX NN
- * Set VX to VX + NN. Do not set the carry flag.
+ * Set VX to VX + NN. Do not set the carry flag on overflow.
  */
 void add_immediate_to_register(uint16_t instruction) {
 	uint8_t r = extract_register_from_xnn(instruction);
 	uint8_t r_val = read_register_bank(r);
 	uint8_t immediate = extract_immediate_from_xnn(instruction);
 
-	uint16_t result = r_val + immediate;
+	uint8_t result = r_val + immediate; // Ignore overflow
 
-	write_register_bank(r, r_val + immediate);
+	write_register_bank(r, result);
+}
+
+/*
+ * 7XNN
+ * ADD VX VY
+ * Set VX to VX + VY. Set the carry flag to 1 on overflow, otherwise set it to 0.
+ */
+void add_register_to_register(uint16_t instruction) {
+	uint8_t vx = extract_first_register_from_xy(instruction);
+	uint8_t vy = extract_second_register_from_xy(instruction);
+
+	uint8_t vx_val = read_register_bank(vx);
+	uint8_t vy_val = read_register_bank(vy);
+
+	// Need something bigger than a byte to check for overflow,
+	// result will be trimmed when passed as argument
+	uint16_t result = vx_val + vy_val;
+	if (result > 255) {
+		write_register_bank(VF_REGISTER, 1);
+	} else {
+		write_register_bank(VF_REGISTER, 0);
+	}
+
+	write_register_bank(vx, result);
+}
+
+/* Bit operations */
+
+/*
+ * 8XY1
+ * OR VX VY
+ * Set VX to the bitwise OR of VX and VY.
+ */
+void bitwise_or(uint16_t instruction) {
+	uint8_t vx = extract_first_register_from_xy(instruction);
+	uint8_t vy = extract_second_register_from_xy(instruction);
+
+	uint8_t vx_val = read_register_bank(vx);
+	uint8_t vy_val = read_register_bank(vy);
+
+	vx_val = vx_val | vy_val;
+	write_register_bank(vx, vx_val);
+}
+
+/*
+ * 8XY2
+ * AND VX VY
+ * Set VX to the bitwise AND of VX and VY.
+ */
+void bitwise_and(uint16_t instruction) {
+	uint8_t vx = extract_first_register_from_xy(instruction);
+	uint8_t vy = extract_second_register_from_xy(instruction);
+
+	uint8_t vx_val = read_register_bank(vx);
+	uint8_t vy_val = read_register_bank(vy);
+
+	vx_val = vx_val & vy_val;
+	write_register_bank(vx, vx_val);
+}
+
+/*
+ * 8XY3
+ * XOR VX VY
+ * Set VX to the bitwise XOR of VX and VY.
+ */
+void bitwise_xor(uint16_t instruction) {
+	uint8_t vx = extract_first_register_from_xy(instruction);
+	uint8_t vy = extract_second_register_from_xy(instruction);
+
+	uint8_t vx_val = read_register_bank(vx);
+	uint8_t vy_val = read_register_bank(vy);
+
+	vx_val = vx_val ^ vy_val;
+	write_register_bank(vx, vx_val);
 }
