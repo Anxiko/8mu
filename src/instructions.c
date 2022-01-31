@@ -304,3 +304,53 @@ void bitwise_xor(uint16_t instruction) {
 	vx_val = vx_val ^ vy_val;
 	write_register_bank(vx, vx_val);
 }
+
+/*
+ * 8XYE
+ * SHIFTL VX VY.
+ * If OPTION_USE_EXTRA_REGISTER_ON_SHIFT, set VX to VY << 1.
+ * Otherwise, set VX to VX << 1, ignoring VY entirely.
+ * In either case, set the carry flag to the value of the shifted out bit.
+ */
+void shift_left(uint16_t instruction) {
+	uint8_t vx = extract_first_register_from_xy(instruction);
+	uint8_t value;
+
+#if OPTION_USE_EXTRA_REGISTER_ON_SHIFT
+	uint8_t vy = extract_second_register_from_xy(instruction);
+	value = read_register_bank(vy);
+#else
+	value = read_register_bank(vx);
+#endif
+
+	uint8_t shifted_out_bit = (value & 0x80) >> 7;
+	write_register_bank(STATUS_REGISTER, shifted_out_bit);
+
+	uint8_t result = value << 1;
+	write_register_bank(vx, result);
+}
+
+/*
+ * 8XY6
+ * SHIFTR VX VY.
+ * If OPTION_USE_EXTRA_REGISTER_ON_SHIFT, set VX to VY >> 1.
+ * Otherwise, set VX to VX >> 1, ignoring VY entirely.
+ * In either case, set the carry flag to the value of the shifted out bit.
+ */
+void shift_right(uint16_t instruction) {
+	uint8_t vx = extract_first_register_from_xy(instruction);
+	uint8_t value;
+
+#if OPTION_USE_EXTRA_REGISTER_ON_SHIFT
+	uint8_t vy = extract_second_register_from_xy(instruction);
+	value = read_register_bank(vy);
+#else
+	value = read_register_bank(vx);
+#endif
+
+	uint8_t shifted_out_bit = value & 1;
+	write_register_bank(STATUS_REGISTER, shifted_out_bit);
+
+	uint8_t result = value >> 1;
+	write_register_bank(vx, result);
+}
