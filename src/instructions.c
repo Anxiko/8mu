@@ -1,13 +1,23 @@
 #include "instructions.h"
 
-/*
- * Graphics
- */
+/* Graphics */
 
+/*
+ * 00E0
+ * CLEAR
+ * Clears the screen.
+ */
 void clear_screen(uint16_t instruction) {
 	memset(get_screen(), 0, SCREEN_SIZE_BYTES);
 }
 
+
+/*
+ * DXYN
+ * DRAW VX VY N
+ * Draws an N rows high pixel at the (VX, VY) coordinates on screen.
+ * Set the carry flag if a pixel that was on has been toggled off.
+ */
 void draw(uint16_t instruction) {
 	uint8_t r1 = extract_first_register_from_xyn(instruction);
 	uint8_t r2 = extract_second_register_from_xyn(instruction);
@@ -35,9 +45,7 @@ void draw(uint16_t instruction) {
 }
 
 
-/*
- * Jump/subroutines
- */
+/* Jumping and subroutines */
 
 /*
  * 1NNN
@@ -72,9 +80,7 @@ void return_subroutine() {
 	write_index_register(destination);
 }
 
-/*
- * Conditionals
- */
+/* Conditionals */
 
 /*
  * 3XNN
@@ -140,37 +146,18 @@ void skip_if_registers_different(uint16_t instruction) {
 	}
 }
 
-/*
- * Registers
- */
+/* Registers */
 
 /*
  * 6XNN
  * SETR VX NN
  * Sets VX to NN.
  */
-
 void set_register_to_immediate(uint16_t instruction) {
 	uint8_t r = extract_register_from_xnn(instruction);
 	uint8_t immediate = extract_immediate_from_xnn(instruction);
 
 	write_register_bank(r, immediate);
-}
-
-/*
- * 7XNN
- * ADDI VX NN
- * Set VX to VX + NN. Do not set the carry flag.
- */
-
-void add_immediate_to_register(uint16_t instruction) {
-	uint8_t r = extract_register_from_xnn(instruction);
-	uint8_t r_val = read_register_bank(r);
-	uint8_t immediate = extract_immediate_from_xnn(instruction);
-
-	uint16_t result = r_val + immediate;
-
-	write_register_bank(r, r_val + immediate);
 }
 
 /*
@@ -181,4 +168,21 @@ void add_immediate_to_register(uint16_t instruction) {
 void set_index_register(uint16_t instruction) {
 	uint16_t i_val = extract_immediate_from_nnn(instruction);
 	write_index_register(i_val);
+}
+
+/* Arithmetic */
+
+/*
+ * 7XNN
+ * ADDI VX NN
+ * Set VX to VX + NN. Do not set the carry flag.
+ */
+void add_immediate_to_register(uint16_t instruction) {
+	uint8_t r = extract_register_from_xnn(instruction);
+	uint8_t r_val = read_register_bank(r);
+	uint8_t immediate = extract_immediate_from_xnn(instruction);
+
+	uint16_t result = r_val + immediate;
+
+	write_register_bank(r, r_val + immediate);
 }
