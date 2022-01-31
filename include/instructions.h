@@ -10,7 +10,13 @@
 #include "memory.h"
 
 #define INSTRUCTION_SIZE 2
-#define VF_REGISTER ((uint8_t) 0xF)
+#define STATUS_REGISTER ((uint8_t) 0xF)
+
+/*
+ * If set, force the shift operations SHIFTL and SHIFTR to use the extra provided.
+ * Otherwise, perform the shift in place, ignoring the extra argument entirely.
+ */
+#define OPTION_USE_EXTRA_REGISTER_ON_SHIFT 1
 
 #define SPRITE_WIDTH 8
 

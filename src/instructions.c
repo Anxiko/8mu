@@ -41,7 +41,7 @@ void draw(uint16_t instruction) {
 			write_pixel_to_screen(x + x_offset, y + y_offset, result_pixel);
 		}
 	}
-	write_register_bank(VF_REGISTER, vf_flag);
+	write_register_bank(STATUS_REGISTER, vf_flag);
 }
 
 
@@ -203,11 +203,55 @@ void add_register_to_register(uint16_t instruction) {
 	// result will be trimmed when passed as argument
 	uint16_t result = vx_val + vy_val;
 	if (result > 255) {
-		write_register_bank(VF_REGISTER, 1);
+		write_register_bank(STATUS_REGISTER, 1);
 	} else {
-		write_register_bank(VF_REGISTER, 0);
+		write_register_bank(STATUS_REGISTER, 0);
 	}
 
+	write_register_bank(vx, result);
+}
+
+/*
+ * 8XY5
+ * SUB VX VY
+ * Set VX to VX - VY. Set the carry flag to 1 if VX > VY, otherwise set it to 0.
+ */
+void sub_register_from_register(uint16_t instruction) {
+	uint8_t vx = extract_first_register_from_xy(instruction);
+	uint8_t vy = extract_second_register_from_xy(instruction);
+
+	uint8_t vx_val = read_register_bank(vx);
+	uint8_t vy_val = read_register_bank(vy);
+
+	if (vx > vy) {
+		write_register_bank(STATUS_REGISTER, 1);
+	} else {
+		write_register_bank(STATUS_REGISTER, 0);
+	}
+
+	uint8_t result = vx_val - vy_val;
+	write_register_bank(vx, result);
+}
+
+/*
+ * 8XY7
+ * SUB- VX VY
+ * Set VX to VY - VX. Set the carry flag to 1 if VY > VX, otherwise set it to 0.
+ */
+void negative_sub_register_from_register(uint16_t instruction) {
+	uint8_t vx = extract_first_register_from_xy(instruction);
+	uint8_t vy = extract_second_register_from_xy(instruction);
+
+	uint8_t vx_val = read_register_bank(vx);
+	uint8_t vy_val = read_register_bank(vy);
+
+	if (vy > vx) {
+		write_register_bank(STATUS_REGISTER, 1);
+	} else {
+		write_register_bank(STATUS_REGISTER, 0);
+	}
+
+	uint8_t result = vy_val - vx_val;
 	write_register_bank(vx, result);
 }
 
