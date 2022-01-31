@@ -170,6 +170,26 @@ void skip_if_registers_different(uint16_t instruction) {
 	}
 }
 
+/*
+ * EX9E
+ * SKPR VX
+ * Skip the next instruction if the key stored in VX is pressed.
+ * VX should be 0x0 <= VX <= 0xF.
+ */
+void skip_pressed(int16_t instruction) {
+
+}
+
+/*
+ * EXA1
+ * SKNP VX
+ * Skip the next instruction if the key stored in VX is not pressed.
+ * VX should be 0x0 <= VX <= 0xF.
+ */
+void skip_not_pressed(int16_t instruction) {
+
+}
+
 /* Registers */
 
 /*
