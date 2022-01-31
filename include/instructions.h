@@ -18,6 +18,13 @@
  */
 #define OPTION_USE_EXTRA_REGISTER_ON_SHIFT 1
 
+/*
+ * Controls how the destination address for JUMPR.
+ * If set, implement BXNN: the base register is VX, and the offset is NN.
+ * Otherwise, implement BNNN: the base register is always V0, and NNN is the offset.
+ */
+#define OPTION_REGISTER_ARGUMENT_ON_JUMP_WITH_OFFSET 0
+
 #define SPRITE_WIDTH 8
 
 

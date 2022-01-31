@@ -71,6 +71,30 @@ void jump_subroutine(uint16_t instruction) {
 }
 
 /*
+ * BNNN | BXNN
+ * JUMPR NNN | JUMPR VX NN
+ * Sets the PC to the result of a register + an offset.
+ * If OPTION_REGISTER_ARGUMENT_ON_JUMP_WITH_OFFSET, set PC to VX + NN.
+ * Otherwise, set PC to V0 + NNN.
+ */
+void jump_with_offset(uint16_t instruction) {
+	uint8_t base;
+	uint16_t offset;
+
+#if OPTION_REGISTER_ARGUMENT_ON_JUMP_WITH_OFFSET
+	uint8_t vx = extract_register_from_xnn(instruction);
+	base = read_register_bank(vx);
+	offset = extract_immediate_from_xnn(instruction);
+#else
+	base = read_register_bank(0);
+	offset = extract_register_from_xnn(instruction);
+#endif
+
+	uint16_t destination = base + (offset & ADDRESS_INSTRUCTION_BITMASK);
+	write_register_pc(destination);
+}
+
+/*
  * 00EE
  * RETURN
  * Pops an address from the stack, and sets the PC to this address.
