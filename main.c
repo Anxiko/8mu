@@ -15,7 +15,14 @@ uint8_t rom[ROM_SIZE];
 
 void handle_sdl_error(bool error, const char *error_msg);
 
-int main(int argc, char *argv[]) {
+int main(int argc, const char *argv[]) {
+	if (argc != 2) {
+		fprintf(stderr, "Invalid number of arguments");
+		return EXIT_FAILURE;
+	}
+
+	const char *rom_path = argv[1];
+
 	SDL_SetMainReady();
 	handle_sdl_error(SDL_Init(SDL_INIT_VIDEO) < 0, "Failed to initialize SDL");
 
@@ -29,7 +36,11 @@ int main(int argc, char *argv[]) {
 	handle_sdl_error(renderer == NULL, "Failed to create renderer");
 
 	memset(rom, 0, ROM_SIZE);
-	FILE *file_ptr = fopen("data/ibm_logo.ch8", "rb");
+	FILE *file_ptr = fopen(rom_path, "rb");
+	if (file_ptr == NULL) {
+		fprintf(stderr, "Failed to open file %s", rom_path);
+		return EXIT_FAILURE;
+	}
 	size_t bytes_read = fread(rom, 1, ROM_SIZE, file_ptr);
 	printf("Read %d byte(s)\n", bytes_read);
 	fclose(file_ptr);
@@ -70,11 +81,13 @@ int main(int argc, char *argv[]) {
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+
+	return EXIT_SUCCESS;
 }
 
 void handle_sdl_error(bool error, const char *error_msg) {
 	if (error) {
 		printf("%s: %s", error_msg, SDL_GetError());
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 }
