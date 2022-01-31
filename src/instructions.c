@@ -39,11 +39,21 @@ void draw(uint16_t instruction) {
  * Jump/subroutines
  */
 
+/*
+ * 1NNN
+ * GOTO NNN
+ * Sets the PC to NNN.
+ */
 void jump(uint16_t instruction) {
 	uint16_t destination = instruction & ADDRESS_INSTRUCTION_BITMASK;
 	write_register_pc(destination);
 }
 
+/*
+ * 2NNN
+ * CALL NNN
+ * Saves the current PC to the stack, and then sets the PC to NNN.
+ */
 void jump_subroutine(uint16_t instruction) {
 	uint16_t current_address = read_register_pc() & ADDRESS_INSTRUCTION_BITMASK;
 	stack_push(current_address);
@@ -52,6 +62,11 @@ void jump_subroutine(uint16_t instruction) {
 	write_register_pc(destination);
 }
 
+/*
+ * 00EE
+ * RETURN
+ * Pops an address from the stack, and sets the PC to this address.
+ */
 void return_subroutine() {
 	uint16_t destination = stack_pop() & ADDRESS_INSTRUCTION_BITMASK;
 	write_index_register(destination);
@@ -61,6 +76,11 @@ void return_subroutine() {
  * Conditionals
  */
 
+/*
+ * 3XNN
+ * SIEQ VX NN
+ * Skips the next instruction if VX is equal to NN.
+ */
 void skip_if_equal_to_immediate(uint16_t instruction) {
 	uint8_t r = extract_register_from_xnn(instruction);
 	uint8_t r_value = read_register_bank(r);
@@ -71,6 +91,11 @@ void skip_if_equal_to_immediate(uint16_t instruction) {
 	}
 }
 
+/*
+ * 4XNN
+ * SINE VX NN
+ * Skips the next instruction if VX is different from NN.
+ */
 void skip_if_different_from_immediate(uint16_t instruction) {
 	uint8_t r = extract_register_from_xnn(instruction);
 	uint8_t r_value = read_register_bank(r);
@@ -81,6 +106,11 @@ void skip_if_different_from_immediate(uint16_t instruction) {
 	}
 }
 
+/*
+ * 5XY0
+ * SREQ VX VY
+ * Skips the next instruction if VX is equal to VY.
+ */
 void skip_if_registers_equal(uint16_t instruction) {
 	uint8_t r1 = extract_first_register_from_xy(instruction);
 	uint8_t r2 = extract_second_register_from_xy(instruction);
@@ -93,6 +123,11 @@ void skip_if_registers_equal(uint16_t instruction) {
 	}
 }
 
+/*
+ * 9XY0
+ * SRNE VX VY
+ * Skips the next instruction if VX is different from VY.
+ */
 void skip_if_registers_different(uint16_t instruction) {
 	uint8_t r1 = extract_first_register_from_xy(instruction);
 	uint8_t r2 = extract_second_register_from_xy(instruction);
@@ -109,12 +144,24 @@ void skip_if_registers_different(uint16_t instruction) {
  * Registers
  */
 
+/*
+ * 6XNN
+ * SETR VX NN
+ * Sets VX to NN.
+ */
+
 void set_register_to_immediate(uint16_t instruction) {
 	uint8_t r = extract_register_from_xnn(instruction);
 	uint8_t immediate = extract_immediate_from_xnn(instruction);
 
 	write_register_bank(r, immediate);
 }
+
+/*
+ * 7XNN
+ * ADDI VX NN
+ * Set VX to VX + NN. Do not set the carry flag.
+ */
 
 void add_immediate_to_register(uint16_t instruction) {
 	uint8_t r = extract_register_from_xnn(instruction);
@@ -126,6 +173,11 @@ void add_immediate_to_register(uint16_t instruction) {
 	write_register_bank(r, r_val + immediate);
 }
 
+/*
+ * ANNN
+ * SETI NNN
+ * Set the I register to NNN.
+ */
 void set_index_register(uint16_t instruction) {
 	uint16_t i_val = extract_immediate_from_nnn(instruction);
 	write_index_register(i_val);
