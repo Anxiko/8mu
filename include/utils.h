@@ -30,6 +30,9 @@
 #define INSTRUCTION_FIELD_IMMEDIATE_XYN_BITMASK ((uint16_t) 0x000F)
 #define INSTRUCTION_FIELD_IMMEDIATE_XYN_OFFSET 0
 
+#define INSTRUCTION_FIELD_REGISTER_X_BITMASK ((uint16_t) 0x0F00)
+#define INSTRUCTION_FIELD_REGISTER_X_OFFSET 8
+
 
 #include <stdint.h>
 
@@ -52,5 +55,7 @@ uint8_t extract_first_register_from_xyn(uint16_t instruction);
 uint8_t extract_second_register_from_xyn(uint16_t instruction);
 
 uint8_t extract_immediate_from_xyn(uint16_t instruction);
+
+uint8_t extract_register_from_x(uint16_t instruction);
 
 #endif //CHIP8_UTILS_H

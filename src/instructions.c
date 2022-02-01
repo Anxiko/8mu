@@ -177,7 +177,13 @@ void skip_if_registers_different(uint16_t instruction) {
  * VX should be 0x0 <= VX <= 0xF.
  */
 void skip_pressed(int16_t instruction) {
+	uint8_t vx = extract_register_from_x(instruction);
+	uint8_t vx_val = read_register_bank(vx);
 
+	bool key_pressed = is_key_pressed(vx_val);
+	if (key_pressed) {
+		write_register_pc(read_register_pc() + INSTRUCTION_SIZE);
+	}
 }
 
 /*
@@ -187,6 +193,13 @@ void skip_pressed(int16_t instruction) {
  * VX should be 0x0 <= VX <= 0xF.
  */
 void skip_not_pressed(int16_t instruction) {
+	uint8_t vx = extract_register_from_x(instruction);
+	uint8_t vx_val = read_register_bank(vx);
+
+	bool key_pressed = is_key_pressed(vx_val);
+	if (!key_pressed) {
+		write_register_pc(read_register_pc() + INSTRUCTION_SIZE);
+	}
 
 }
 

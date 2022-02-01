@@ -19,7 +19,7 @@ add_executable(chip8
         src/memory.c
         src/debug.c
         src/emulator.c
-        )
+		src/keyboard.c)
 
 message(${SDL2_LIBRARY})
 target_link_libraries(chip8 ${SDL2_LIBRARY})

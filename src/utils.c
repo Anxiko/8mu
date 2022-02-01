@@ -83,3 +83,10 @@ uint8_t extract_immediate_from_xyn(uint16_t instruction) {
 		INSTRUCTION_FIELD_IMMEDIATE_XYN_BITMASK, INSTRUCTION_FIELD_IMMEDIATE_XYN_OFFSET
 	);
 }
+
+uint8_t extract_register_from_x(uint16_t instruction) {
+	return extract_field(
+		instruction,
+		INSTRUCTION_FIELD_REGISTER_X_BITMASK, INSTRUCTION_FIELD_REGISTER_X_OFFSET
+	);
+}

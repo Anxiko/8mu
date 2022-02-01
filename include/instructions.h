@@ -4,12 +4,14 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "stack.h"
 #include "screen.h"
 #include "registers.h"
 #include "utils.h"
 #include "memory.h"
+#include "keyboard.h"
 
 #define INSTRUCTION_SIZE 2
 #define STATUS_REGISTER ((uint8_t) 0xF)
