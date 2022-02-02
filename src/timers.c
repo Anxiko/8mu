@@ -35,9 +35,5 @@ uint8_t read_timer(TimerRegister *timer) {
 void refresh_timers() {
 	read_timer(&delay_timer);
 	uint8_t sound_ticks = read_timer(&sound_timer);
-	if (sound_ticks > 0) {
-		beeper_on();
-	} else {
-		beeper_off();
-	}
+	set_beeper_state(sound_ticks > 0? true : false);
 }

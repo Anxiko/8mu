@@ -1,9 +1,5 @@
 #include "beeper.h"
 
-void beeper_on() {
-
-}
-
-void beeper_off() {
+void set_beeper_state(bool state) {
 
 }

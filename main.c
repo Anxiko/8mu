@@ -24,7 +24,7 @@ int main(int argc, const char *argv[]) {
 	const char *rom_path = argv[1];
 
 	SDL_SetMainReady();
-	handle_sdl_error(SDL_Init(SDL_INIT_VIDEO) < 0, "Failed to initialize SDL");
+	handle_sdl_error(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0, "Failed to initialize SDL");
 
 	SDL_Window *window = SDL_CreateWindow(
 		"Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
