@@ -424,8 +424,21 @@ void set_register_to_bitmasked_rand(uint16_t instruction) {
 	uint8_t vx = extract_register_from_xnn(instruction);
 	uint8_t bitmask = extract_immediate_from_xnn(instruction);
 
-	uint8_t random_byte = set_register_to_bitmasked_rand() & 0xF; // NOLINT(cert-msc50-cpp)
+	uint8_t random_byte = rand() & 0xF; // NOLINT(cert-msc50-cpp)
 	uint8_t result = random_byte & bitmask;
 
 	write_register_bank(vx, result);
+}
+
+/* I/O */
+
+/*
+ * FX07
+ * RDEL VX
+ * Set VX to the current value of the delay timer.
+ */
+
+void read_delay(uint16_t instruction) {
+	uint8_t vx = extract_register_from_x(instruction);
+
 }

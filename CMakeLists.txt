@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(chip8 C)
 
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(SDL2_PATH $ENV{SDL2_PATH})
@@ -19,7 +19,9 @@ add_executable(chip8
         src/memory.c
         src/debug.c
         src/emulator.c
-		src/keyboard.c)
+		src/keyboard.c
+		src/timers.c
+		src/beeper.c)
 
 message(${SDL2_LIBRARY})
 target_link_libraries(chip8 ${SDL2_LIBRARY})
