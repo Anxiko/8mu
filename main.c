@@ -8,6 +8,7 @@
 #include "cpu.h"
 #include "debug.h"
 #include "emulator.h"
+#include "beeper.h"
 
 #include "SDL.h"
 #include "SDL_mixer.h"
@@ -46,6 +47,7 @@ int main(int argc, const char *argv[]) {
 		fprintf(stderr, "Failed to load sound effect");
 		exit(EXIT_FAILURE);
 	}
+	set_mixer_chunk(mix_chunk);
 
 	SDL_Window *window = SDL_CreateWindow(
 		"Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -98,7 +100,7 @@ int main(int argc, const char *argv[]) {
 				case SDL_KEYDOWN: {
 					switch (e.key.keysym.sym) {
 						case SDLK_SPACE: {
-							Mix_PlayChannel(-1, mix_chunk, 0);
+							Mix_PlayChannel(-1, mix_chunk, -1);
 						}
 					}
 				}
@@ -106,6 +108,7 @@ int main(int argc, const char *argv[]) {
 		}
 	}
 
+	set_mixer_chunk(NULL);
 	Mix_FreeChunk(mix_chunk);
 	Mix_CloseAudio();
 
