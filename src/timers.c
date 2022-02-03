@@ -32,8 +32,26 @@ uint8_t read_timer(TimerRegister *timer) {
 	return timer->set_value - ticks_elapsed;
 }
 
+void write_to_timer(TimerRegister *timer, uint8_t value) {
+	int64_t current_time_millis = time_millis();
+	timer->set_ts_millis = current_time_millis;
+	timer->set_value = value;
+}
+
 void refresh_timers() {
 	read_timer(&delay_timer);
 	uint8_t sound_ticks = read_timer(&sound_timer);
 	set_beeper_state(sound_ticks > 0? true : false);
+}
+
+uint8_t read_delay_timer() {
+	return read_timer(&delay_timer);
+}
+
+void write_delay_timer(uint8_t delay) {
+	write_to_timer(&delay_timer, delay);
+}
+
+void write_sound_timer(uint8_t delay) {
+	write_to_timer(&sound_timer, delay);
 }

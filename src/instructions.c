@@ -53,7 +53,7 @@ void draw(uint16_t instruction) {
  * Sets the PC to NNN.
  */
 void jump(uint16_t instruction) {
-	uint16_t destination = instruction & ADDRESS_INSTRUCTION_BITMASK;
+	uint16_t destination = instruction & ADDRESS_BITMASK;
 	write_register_pc(destination);
 }
 
@@ -63,10 +63,10 @@ void jump(uint16_t instruction) {
  * Saves the current PC to the stack, and then sets the PC to NNN.
  */
 void jump_subroutine(uint16_t instruction) {
-	uint16_t current_address = read_register_pc() & ADDRESS_INSTRUCTION_BITMASK;
+	uint16_t current_address = read_register_pc() & ADDRESS_BITMASK;
 	stack_push(current_address);
 
-	uint16_t destination = instruction & ADDRESS_INSTRUCTION_BITMASK;
+	uint16_t destination = instruction & ADDRESS_BITMASK;
 	write_register_pc(destination);
 }
 
@@ -90,7 +90,7 @@ void jump_with_offset(uint16_t instruction) {
 	offset = extract_register_from_xnn(instruction);
 #endif
 
-	uint16_t destination = base + (offset & ADDRESS_INSTRUCTION_BITMASK);
+	uint16_t destination = base + (offset & ADDRESS_BITMASK);
 	write_register_pc(destination);
 }
 
@@ -100,7 +100,7 @@ void jump_with_offset(uint16_t instruction) {
  * Pops an address from the stack, and sets the PC to this address.
  */
 void return_subroutine() {
-	uint16_t destination = stack_pop() & ADDRESS_INSTRUCTION_BITMASK;
+	uint16_t destination = stack_pop() & ADDRESS_BITMASK;
 	write_index_register(destination);
 }
 
@@ -242,6 +242,34 @@ void add_immediate_to_register(uint16_t instruction) {
 	uint8_t result = r_val + immediate; // Ignore overflow
 
 	write_register_bank(r, result);
+}
+
+/*
+ * FX1E
+ * IADD VX
+ * Increment the index register by the value stored in VX.
+ * If OPTION_OVERFLOW_ON_ADD_TO_INDEX,
+ * set the carry flag if the result overflows over the size of the index register,
+ * or reset it if it doesn't overflow.
+ * Otherwise, do not alter the carry flag at all.
+ */
+void add_to_index(uint16_t instruction) {
+	uint8_t vx = extract_register_from_x(instruction);
+	uint16_t i_val = read_index_register();
+
+	uint16_t result = i_val + vx;
+
+#if OPTION_OVERFLOW_ON_ADD_TO_INDEX
+	uint8_t carry_flag;
+	if ((~ADDRESS_BITMASK) & result) {
+		carry_flag = 1;
+	} else {
+		carry_flag = 0;
+	}
+	write_register_bank(STATUS_REGISTER, carry_flag);
+#endif
+
+	write_index_register(result & ADDRESS_BITMASK);
 }
 
 /*
@@ -440,5 +468,50 @@ void set_register_to_bitmasked_rand(uint16_t instruction) {
 
 void read_delay(uint16_t instruction) {
 	uint8_t vx = extract_register_from_x(instruction);
+	uint8_t delay = read_delay_timer();
 
+	write_register_bank(vx, delay);
+}
+
+/*
+ * FX15
+ * TDEL VX
+ * Set the delay timer to the value of VX.
+ */
+void set_delay(uint16_t instruction) {
+	uint8_t vx = extract_register_from_x(instruction);
+	uint8_t vx_val = read_register_bank(vx);
+
+	write_delay_timer(vx_val);
+}
+
+/*
+ * FX18
+ * TSND VX
+ * Set the sound timer to the value of VX.
+ */
+void set_sound(uint16_t instruction) {
+	uint8_t vx = extract_register_from_x(instruction);
+	uint8_t vx_val = read_register_bank(vx);
+
+	write_sound_timer(vx_val);
+}
+
+/*
+ * FX0A
+ * KEY VX
+ * Depending on OPTION_KEY_WAIT_FOR_RELEASE, the instruction awaits until a key release (if set)
+ * or a key release (if not set).
+ * If a key event is happening right now, save the key that triggered the event in VX.
+ * Otherwise, decrease the PC by 2.
+ * This instruction will functionally repeat until a key event is triggered.
+ */
+void wait_for_key(uint16_t instruction) {
+	uint8_t key;
+	if (any_key_pressed(&key)) {
+		uint8_t vx = extract_register_from_x(instruction);
+		write_register_bank(vx, key);
+	} else {
+		write_register_pc(read_register_pc() - INSTRUCTION_SIZE);
+	}
 }

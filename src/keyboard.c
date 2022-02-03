@@ -15,3 +15,13 @@ bool is_key_pressed(uint8_t key) {
 
 	return state[keycode] ? true : false;
 }
+
+bool any_key_pressed(uint8_t *pressed_key) {
+	for (uint8_t key = 0; key < NUMBER_OF_KEYS; ++key) {
+		if (is_key_pressed(key)) {
+			*pressed_key = key;
+			return true;
+		}
+	}
+	return false;
+}

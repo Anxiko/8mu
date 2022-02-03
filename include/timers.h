@@ -6,6 +6,10 @@
 
 #include "beeper.h"
 
-void read_delay_timer();
+uint8_t read_delay_timer();
+
+void write_delay_timer(uint8_t delay);
+
+void write_sound_timer(uint8_t delay);
 
 #endif //CHIP8_TIMERS_H

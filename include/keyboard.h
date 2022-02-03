@@ -10,4 +10,6 @@
 
 bool is_key_pressed(uint8_t key);
 
+bool any_key_pressed(uint8_t *pressed_key);
+
 #endif //CHIP8_KEYBOARD_H

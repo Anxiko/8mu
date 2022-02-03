@@ -12,6 +12,7 @@
 #include "utils.h"
 #include "memory.h"
 #include "keyboard.h"
+#include "timers.h"
 
 #define INSTRUCTION_SIZE 2
 #define STATUS_REGISTER ((uint8_t) 0xF)
@@ -28,6 +29,13 @@
  * Otherwise, implement BNNN: the base register is always V0, and NNN is the offset.
  */
 #define OPTION_REGISTER_ARGUMENT_ON_JUMP_WITH_OFFSET 0
+
+/*
+ * If set, the instruction IADD sets the carry flag if the result overflows over the expected 12 bits size.
+ * This includes setting the flag to 0 if it doesn't overflow.
+ * If not set, the instruction will not alter the carry flag whatsoever.
+ */
+#define OPTION_OVERFLOW_ON_ADD_TO_INDEX 0
 
 #define SPRITE_WIDTH 8
 
