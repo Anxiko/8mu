@@ -23,4 +23,6 @@ void write_byte_memory(uint16_t address, uint8_t value);
 
 void write_word_memory(uint16_t address, uint16_t word);
 
+uint16_t character_address(uint8_t c);
+
 #endif //CHIP8_MEMORY_H

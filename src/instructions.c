@@ -515,3 +515,17 @@ void wait_for_key(uint16_t instruction) {
 		write_register_pc(read_register_pc() - INSTRUCTION_SIZE);
 	}
 }
+
+/*
+ * FX29
+ * CHAR VX
+ * Set the index register to the address where the sprite for the character in VX is located.
+ */
+void point_to_char(uint16_t instruction) {
+	uint8_t vx = extract_register_from_x(instruction);
+
+	uint8_t requested_char = read_register_bank(vx) & 0x0F;
+	uint16_t char_address = character_address(requested_char) & ADDRESS_BITMASK;
+
+	write_index_register(char_address);
+}
