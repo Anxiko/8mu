@@ -340,6 +340,25 @@ void negative_sub_register_from_register(uint16_t instruction) {
 	write_register_bank(vx, result);
 }
 
+
+/* FX33
+ * DEC VX
+ * Extract the digits of the decimal representation of the value stored in VX.
+ * Store the hundreds digit in I, the tenths in I+1, and the units in I+2.
+ */
+void decimal_decode(uint16_t instruction) {
+	uint8_t vx = extract_register_from_x(instruction);
+	uint8_t val = read_register_bank(vx);
+
+	uint16_t address = read_index_register();
+
+	for (int i = 2; i >= 0; --i) {
+		uint8_t digit = val % 10;
+		val /= 10;
+		write_byte_memory(address + i, digit);
+	}
+}
+
 /* Bit operations */
 
 /*
