@@ -16,6 +16,7 @@
 
 #define INSTRUCTION_SIZE 2
 #define STATUS_REGISTER ((uint8_t) 0xF)
+#define SPRITE_WIDTH 8
 
 /*
  * If set, force the shift operations SHIFTL and SHIFTR to use the extra provided.
@@ -43,31 +44,23 @@
  */
 #define OPTION_DUMP_INCREMENTS_I 0
 
-#define SPRITE_WIDTH 8
-
-
-/*
- * Graphics
- */
+/* Graphics */
 
 void clear_screen(uint16_t instruction);
 
 void draw(uint16_t instruction);
 
-
-/*
- * Jump/subroutines
- */
+/* Jumping and subroutines */
 
 void jump(uint16_t instruction);
 
 void jump_subroutine(uint16_t instruction);
 
+void jump_with_offset(uint16_t instruction);
+
 void return_subroutine();
 
-/*
- * Conditionals
- */
+/* Conditionals */
 
 void skip_if_equal_to_immediate(uint16_t instruction);
 
@@ -77,14 +70,60 @@ void skip_if_registers_equal(uint16_t instruction);
 
 void skip_if_registers_different(uint16_t instruction);
 
-/*
- * Registers
- */
+void skip_pressed(int16_t instruction);
+
+void skip_not_pressed(int16_t instruction);
+
+/* Registers */
 
 void set_register_to_immediate(uint16_t instruction);
 
-void add_immediate_to_register(uint16_t instruction);
-
 void set_index_register(uint16_t instruction);
 
-#endif //CHIP8_INSTRUCTIONS_H
+/* Memory */
+
+void save_registers(uint16_t instruction);
+
+void load_registers(uint16_t instruction);
+
+/* Arithmetic */
+
+void add_immediate_to_register(uint16_t instruction);
+
+void add_to_index(uint16_t instruction);
+
+void add_register_to_register(uint16_t instruction);
+
+void sub_register_from_register(uint16_t instruction);
+
+void negative_sub_register_from_register(uint16_t instruction);
+
+void decimal_decode(uint16_t instruction);
+
+/* Bit operations */
+
+void bitwise_or(uint16_t instruction);
+
+void bitwise_and(uint16_t instruction);
+
+void bitwise_xor(uint16_t instruction);
+
+void shift_left(uint16_t instruction);
+
+void shift_right(uint16_t instruction);
+
+/* Misc */
+
+void set_register_to_bitmasked_rand(uint16_t instruction);
+
+/* I/O */
+
+void read_delay(uint16_t instruction);
+
+void set_delay(uint16_t instruction);
+
+void set_sound(uint16_t instruction);
+
+void wait_for_key(uint16_t instruction);
+
+void point_to_char(uint16_t instruction);
