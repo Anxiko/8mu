@@ -227,6 +227,50 @@ void set_index_register(uint16_t instruction) {
 	write_index_register(i_val);
 }
 
+/* Memory */
+
+/*
+ * FX55
+ * DUMP X
+ * Write the contents of the registers from V0 through to VX to memory.
+ * X is an immediate, not the register number from which to get a value from.
+ * Valid values of X go from 0 (only V0 will be saved) to F (all registers will be saved).
+ * The saved registers are written starting with V0 at I, up to VX at I+X.
+ * If OPTION_DUMP_INCREMENTS_I, set I to one past the last written byte (I + X + 1).
+ * Otherwise, do not alter I.
+ */
+void save_registers(uint16_t instruction) {
+	uint8_t x = extract_register_from_x(instruction);
+	uint16_t base_address = read_index_register();
+	for (uint8_t i = 0; i <= x; ++i) {
+		uint16_t address = (base_address + i) & ADDRESS_BITMASK;
+		uint8_t vi = read_register_bank(i);
+		write_byte_memory(address, vi);
+	}
+
+#if OPTION_DUMP_INCREMENTS_I
+	set_index_register((base_address + x + 1) & ADDRESS_BITMASK);
+#endif
+}
+
+/*
+ * FX65
+ * LOAD X
+ * Read the registers V0 to VX from memory.
+ * X is an immediate, not the register number from which to get a value from.
+ * Valid values of X go from 0 (only V0 will be loaded) to F (all registers will be loaded).
+ * Values are reading starting from I, up to I + X.
+ */
+void load_registers(uint16_t instruction) {
+	uint8_t x = extract_register_from_x(instruction);
+	uint16_t base_address = read_index_register();
+	for (uint8_t i = 0; i <= x; ++i) {
+		uint16_t address = (base_address + i) & ADDRESS_BITMASK;
+		uint8_t value = read_byte_memory(address);
+		write_register_bank(x, value);
+	}
+}
+
 /* Arithmetic */
 
 /*

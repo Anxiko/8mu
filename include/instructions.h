@@ -37,6 +37,12 @@
  */
 #define OPTION_OVERFLOW_ON_ADD_TO_INDEX 0
 
+/*
+ * If set, DUMP will set the register I to I + X + 1 after its execution.
+ * Otherwise, DUMP will not alter the I.
+ */
+#define OPTION_DUMP_INCREMENTS_I 0
+
 #define SPRITE_WIDTH 8
 
 
