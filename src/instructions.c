@@ -101,7 +101,7 @@ void jump_with_offset(uint16_t instruction) {
  */
 void return_subroutine(__attribute__((unused)) uint16_t _instruction) {
 	uint16_t destination = stack_pop() & ADDRESS_BITMASK;
-	write_index_register(destination);
+	write_register_pc(destination);
 }
 
 /* Conditionals */
