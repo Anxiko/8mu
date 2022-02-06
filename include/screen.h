@@ -6,10 +6,12 @@
 #define SCREEN_SIZE_BYTES ((SCREEN_WIDTH * SCREEN_HEIGHT) / 8)
 
 #include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
 
 #endif //CHIP8_SCREEN_H
 
-uint8_t *get_screen();
+void fill_screen(bool color);
 
 uint8_t read_pixel_from_screen(uint8_t x, uint8_t y);
 

@@ -8,7 +8,7 @@
  * Clears the screen.
  */
 void clear_screen(__attribute__((unused)) uint16_t _instruction) {
-	memset(get_screen(), 0, SCREEN_SIZE_BYTES);
+	fill_screen(false);
 }
 
 

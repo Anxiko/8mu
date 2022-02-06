@@ -6,6 +6,11 @@ uint8_t *get_screen() {
 	return display;
 }
 
+void fill_screen(bool color) {
+	uint8_t value = color ? 0xFF : 0;
+	memset(get_screen(), value, SCREEN_SIZE_BYTES);
+}
+
 uint8_t read_pixel_from_screen(uint8_t x, uint8_t y) {
 	uintptr_t pixel_address = y * SCREEN_WIDTH + x;
 	uintptr_t pixel_byte_address = pixel_address / 8;
