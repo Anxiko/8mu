@@ -129,3 +129,5 @@ void set_sound(uint16_t instruction);
 void wait_for_key(uint16_t instruction);
 
 void point_to_char(uint16_t instruction);
+
+#endif //CHIP8_INSTRUCTIONS_H
