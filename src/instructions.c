@@ -279,7 +279,7 @@ void load_registers(uint16_t instruction) {
 	for (uint8_t i = 0; i <= x; ++i) {
 		uint16_t address = (base_address + i) & ADDRESS_BITMASK;
 		uint8_t value = read_byte_memory(address);
-		write_register_bank(x, value);
+		write_register_bank(i, value);
 	}
 }
 
