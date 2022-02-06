@@ -99,7 +99,7 @@ void jump_with_offset(uint16_t instruction) {
  * RETURN
  * Pops an address from the stack, and sets the PC to this address.
  */
-void return_subroutine() {
+void return_subroutine(uint16_t) {
 	uint16_t destination = stack_pop() & ADDRESS_BITMASK;
 	write_index_register(destination);
 }
@@ -176,7 +176,7 @@ void skip_if_registers_different(uint16_t instruction) {
  * Skip the next instruction if the key stored in VX is pressed.
  * VX should be 0x0 <= VX <= 0xF.
  */
-void skip_pressed(int16_t instruction) {
+void skip_pressed(uint16_t instruction) {
 	uint8_t vx = extract_register_from_x(instruction);
 	uint8_t vx_val = read_register_bank(vx);
 
@@ -192,7 +192,7 @@ void skip_pressed(int16_t instruction) {
  * Skip the next instruction if the key stored in VX is not pressed.
  * VX should be 0x0 <= VX <= 0xF.
  */
-void skip_not_pressed(int16_t instruction) {
+void skip_not_pressed(uint16_t instruction) {
 	uint8_t vx = extract_register_from_x(instruction);
 	uint8_t vx_val = read_register_bank(vx);
 
@@ -204,6 +204,18 @@ void skip_not_pressed(int16_t instruction) {
 }
 
 /* Registers */
+
+/*
+ * 8XY0
+ * COPY VX VY
+ * Set VX to the value of VY.
+ */
+void copy_register(uint16_t instruction) {
+	uint8_t vx = extract_first_register_from_xy(instruction);
+	uint8_t vy = extract_second_register_from_xy(instruction);
+	uint8_t vy_val = read_register_bank(vy);
+	write_register_bank(vx, vy_val);
+}
 
 /*
  * 6XNN

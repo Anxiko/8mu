@@ -58,7 +58,7 @@ void jump_subroutine(uint16_t instruction);
 
 void jump_with_offset(uint16_t instruction);
 
-void return_subroutine();
+void return_subroutine(uint16_t);
 
 /* Conditionals */
 
@@ -70,11 +70,13 @@ void skip_if_registers_equal(uint16_t instruction);
 
 void skip_if_registers_different(uint16_t instruction);
 
-void skip_pressed(int16_t instruction);
+void skip_pressed(uint16_t instruction);
 
-void skip_not_pressed(int16_t instruction);
+void skip_not_pressed(uint16_t instruction);
 
 /* Registers */
+
+void copy_register(uint16_t instruction);
 
 void set_register_to_immediate(uint16_t instruction);
 
