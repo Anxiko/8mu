@@ -46,7 +46,7 @@
 
 /* Graphics */
 
-void clear_screen(uint16_t instruction);
+void clear_screen(__attribute__((unused)) uint16_t _instruction);
 
 void draw(uint16_t instruction);
 
@@ -58,7 +58,7 @@ void jump_subroutine(uint16_t instruction);
 
 void jump_with_offset(uint16_t instruction);
 
-void return_subroutine(uint16_t);
+void return_subroutine(__attribute__((unused)) uint16_t);
 
 /* Conditionals */
 

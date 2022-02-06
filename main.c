@@ -76,8 +76,8 @@ int main(int argc, const char *argv[]) {
 
 	while (running) {
 		uint16_t instruction = fetch();
-		uint8_t decoded_instruction = decode(instruction);
-		execute(instruction, decoded_instruction);
+		Instruction *function = decode(instruction);
+		execute(instruction, function);
 
 		// print_display();
 		render_display(renderer);

@@ -7,7 +7,7 @@
  * CLEAR
  * Clears the screen.
  */
-void clear_screen(uint16_t instruction) {
+void clear_screen(__attribute__((unused)) uint16_t _instruction) {
 	memset(get_screen(), 0, SCREEN_SIZE_BYTES);
 }
 
@@ -99,7 +99,7 @@ void jump_with_offset(uint16_t instruction) {
  * RETURN
  * Pops an address from the stack, and sets the PC to this address.
  */
-void return_subroutine(uint16_t) {
+void return_subroutine(__attribute__((unused)) uint16_t _instruction) {
 	uint16_t destination = stack_pop() & ADDRESS_BITMASK;
 	write_index_register(destination);
 }
