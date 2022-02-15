@@ -97,15 +97,10 @@ int main(int argc, const char *argv[]) {
 						}
 					}
 				}
-				case SDL_KEYDOWN: {
-					switch (e.key.keysym.sym) {
-						case SDLK_SPACE: {
-							Mix_PlayChannel(-1, mix_chunk, -1);
-						}
-					}
-				}
 			}
 		}
+
+		SDL_Delay(2);
 	}
 
 	set_mixer_chunk(NULL);
