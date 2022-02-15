@@ -89,14 +89,6 @@ int main(int argc, const char *argv[]) {
 					running = false;
 					break;
 				}
-				case SDL_MOUSEBUTTONDOWN: {
-					switch (e.button.button) {
-						case SDL_BUTTON_LEFT: {
-							printf("%d %d\n", e.button.x / PIXEL_SCALING, e.button.y / PIXEL_SCALING);
-							break;
-						}
-					}
-				}
 			}
 		}
 
