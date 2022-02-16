@@ -36,6 +36,12 @@ add_executable(
 		src/beeper.c
 )
 
+add_executable(
+		chip8_tests
+		tests/instructions.c
+		src/unity.c
+)
+
 target_link_libraries(
 		chip8
 		${SDL2_LIBRARY}
