@@ -38,7 +38,7 @@ add_executable(
 
 add_executable(
 		chip8_tests
-		tests/instructions.c
+		src/tests/instructions.c
 		src/unity.c
 )
 
