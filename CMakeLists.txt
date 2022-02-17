@@ -34,6 +34,7 @@ add_executable(
 		src/keyboard.c
 		src/timers.c
 		src/beeper.c
+		src/state.c
 )
 
 add_executable(
