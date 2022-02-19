@@ -58,6 +58,17 @@ void test_memory_read() {
 	TEST_ASSERT_EQUAL_UINT16(0x1234, read_word_memory(&cpu_state, ROM_ADDRESS_START));
 }
 
+void test_memory_write() {
+	CpuState expected_state;
+	uint8_t rom[ROM_SIZE] = {0x12, 0x34, 0x56};
+	init_state(&expected_state, rom);
+
+	write_word_memory(&cpu_state, ROM_ADDRESS_START, 0x1234);
+	write_byte_memory(&cpu_state, ROM_ADDRESS_START + 2, 0x56);
+
+	TEST_ASSERT_TRUE(state_equals(&expected_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -67,6 +78,7 @@ int main() {
 	RUN_TEST(test_keyboard_any_key_pressed);
 
 	RUN_TEST(test_memory_read);
+	RUN_TEST(test_memory_write);
 
 	return UNITY_END();
 }
