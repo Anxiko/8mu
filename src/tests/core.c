@@ -76,8 +76,6 @@ void test_memory_character_address() {
 }
 
 void test_register_program_counter() {
-	TEST_ASSERT_EQUAL_UINT8(ROM_ADDRESS_START, read_register_pc(&cpu_state));
-
 	CpuState expected_cpu_state;
 	init_state(&expected_cpu_state, NULL);
 
@@ -86,6 +84,17 @@ void test_register_program_counter() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 
 	TEST_ASSERT_EQUAL_UINT16(0x123, read_register_pc(&cpu_state));
+}
+
+void test_register_index_register() {
+	CpuState expected_cpu_state;
+	init_state(&expected_cpu_state, NULL);
+
+	write_index_register(&cpu_state, 0x123);
+	expected_cpu_state.index_register = 0x123;
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	TEST_ASSERT_EQUAL_UINT16(0x123, read_index_register(&cpu_state));
 }
 
 int main() {
@@ -101,6 +110,7 @@ int main() {
 	RUN_TEST(test_memory_character_address);
 
 	RUN_TEST(test_register_program_counter);
+	RUN_TEST(test_register_index_register);
 
 	return UNITY_END();
 }
