@@ -2,6 +2,7 @@
 #define CHIP8_STATE_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct {
 	uint8_t *memory;
@@ -11,6 +12,7 @@ typedef struct {
 	uint16_t *stack;
 	uint8_t stack_size;
 	uint8_t *display;
+	bool sound_playing;
 
 } CpuState;
 
