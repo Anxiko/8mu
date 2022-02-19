@@ -54,6 +54,8 @@ void init_state(CpuState *cpu_state, const uint8_t *rom) {
 	memset(cpu_state->display, 0, SCREEN_SIZE_BYTES);
 	cpu_state->sound_playing = false;
 
+	memset(cpu_state->keyboard, 0, NUMBER_OF_KEYS);
+
 	initialize_timer(&cpu_state->delay_timer);
 	initialize_timer(&cpu_state->sound_timer);
 }
@@ -69,6 +71,8 @@ void copy_state(CpuState *dst, const CpuState *src) {
 
 	memcpy(dst->display, src->display, SCREEN_SIZE_BYTES);
 	dst->sound_playing = src->sound_playing;
+
+	memcpy(dst->keyboard, src->keyboard, NUMBER_OF_KEYS);
 
 	copy_timer(&dst->delay_timer, &src->delay_timer);
 	copy_timer(&dst->sound_timer, &src->sound_timer);
@@ -91,6 +95,8 @@ bool state_equals(const CpuState *left, const CpuState *right) {
 		memcmp(left->display, right->display, SCREEN_SIZE_BYTES) == 0
 		&&
 		left->sound_playing == right->sound_playing
+		&&
+		memcmp(left->keyboard, right->keyboard, NUMBER_OF_KEYS) == 0
 		&&
 		timer_equals(&left->delay_timer, &right->delay_timer)
 		&&
