@@ -39,7 +39,7 @@ void copy_timer(TimerRegister *dst, const TimerRegister *src) {
 }
 
 bool timer_equals(const TimerRegister *left, const TimerRegister *right) {
-	return left->set_ts_millis == right->set_ts_millis && left->set_value && right->set_ts_millis;
+	return left->set_ts_millis == right->set_ts_millis && left->set_value == right->set_value;
 }
 
 void init_state(CpuState *cpu_state, const uint8_t *rom) {

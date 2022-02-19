@@ -19,28 +19,42 @@ include_directories(
 		${SDL2_INCLUDE_DIR}
 		${SDL2_MIXER_INCLUDE_DIR}
 )
-add_executable(
-		chip8
-		main.c
+
+set(
+		SRC_CORE
+		src/state.c
 		src/stack.c
 		src/registers.c
-		src/cpu.c
-		src/instructions.c
 		src/screen.c
 		src/utils.c
 		src/memory.c
-		src/debug.c
-		src/emulator.c
 		src/keyboard.c
 		src/timers.c
 		src/beeper.c
-		src/state.c
 )
 
 add_executable(
-		chip8_tests
+		chip8
+		main.c
+		${SRC_CORE}
+		src/cpu.c
+		src/instructions.c
+		src/debug.c
+		src/emulator.c
+)
+
+add_executable(
+		chip8_test_instructions
 		src/tests/instructions.c
 		src/unity.c
+		${SRC_CORE}
+)
+
+add_executable(
+		chip8_test_core
+		src/tests/core.c
+		src/unity.c
+		${SRC_CORE}
 )
 
 target_link_libraries(
