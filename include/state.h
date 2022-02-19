@@ -9,6 +9,8 @@
 #define SCREEN_HEIGHT 32
 #define SCREEN_SIZE_BYTES ((SCREEN_WIDTH * SCREEN_HEIGHT) / 8)
 
+#define NUMBER_OF_KEYS 16
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -26,6 +28,9 @@ typedef struct {
 	// Sound & video
 	uint8_t display[SCREEN_SIZE_BYTES];
 	bool sound_playing;
+
+	// Keyboard
+	bool keyboard[NUMBER_OF_KEYS];
 } CpuState;
 
 #endif //CHIP8_STATE_H

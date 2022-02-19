@@ -15,4 +15,6 @@ void render_display(CpuState *cpu_state, SDL_Renderer *renderer);
 
 void play_beeper(CpuState *cpu_state, bool *previous_state, Mix_Chunk *beep_mix_chunk);
 
+void update_keyboard_state(CpuState *cpu_state);
+
 #endif //CHIP8_EMULATOR_H

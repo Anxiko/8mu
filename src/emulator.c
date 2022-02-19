@@ -1,5 +1,14 @@
 #include "emulator.h"
 
+const SDL_Keycode KEYBOARD_CODES[NUMBER_OF_KEYS] = {
+	SDL_SCANCODE_X,
+	SDL_SCANCODE_1, SDL_SCANCODE_2, SDL_SCANCODE_3,
+	SDL_SCANCODE_Q, SDL_SCANCODE_W, SDL_SCANCODE_E,
+	SDL_SCANCODE_A, SDL_SCANCODE_S, SDL_SCANCODE_D,
+	SDL_SCANCODE_Z, SDL_SCANCODE_C,
+	SDL_SCANCODE_4, SDL_SCANCODE_R, SDL_SCANCODE_F, SDL_SCANCODE_V
+};
+
 void render_display(CpuState *cpu_state, SDL_Renderer *renderer) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
@@ -35,4 +44,17 @@ void play_beeper(CpuState *cpu_state, bool *previous_state, Mix_Chunk *beep_mix_
 		Mix_HaltChannel(MIXER_CHANNEL);
 	}
 	*previous_state = cpu_state->sound_playing;
+}
+
+void update_keyboard_state(CpuState *cpu_state) {
+	const Uint8 *sdl_keyboard_state = SDL_GetKeyboardState(NULL);
+
+	for (uint8_t key = 0; key < NUMBER_OF_KEYS; ++key) {
+		SDL_Keycode keycode = KEYBOARD_CODES[key];
+		if (sdl_keyboard_state[keycode]) {
+			cpu_state->keyboard[key] = true;
+		} else {
+			cpu_state->keyboard[key] = false;
+		}
+	}
 }
