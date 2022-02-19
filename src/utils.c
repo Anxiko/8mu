@@ -14,7 +14,7 @@ uint16_t read_word_from_array(uint8_t *ptr, intptr_t offset_in_bytes) {
 
 void write_word_to_array(uint8_t *ptr, intptr_t offset_in_bytes, uint16_t value) {
 	uint8_t first_byte = (value & 0xFF00) >> 8;
-	uint8_t second_byte = value * 0xFF;
+	uint8_t second_byte = value & 0xFF;
 
 	ptr[offset_in_bytes] = first_byte;
 	ptr[offset_in_bytes + 1] = second_byte;
