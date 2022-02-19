@@ -1,10 +1,6 @@
 #ifndef CHIP8_SCREEN_H
 #define CHIP8_SCREEN_H
 
-#define SCREEN_WIDTH 64
-#define SCREEN_HEIGHT 32
-#define SCREEN_SIZE_BYTES ((SCREEN_WIDTH * SCREEN_HEIGHT) / 8)
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>

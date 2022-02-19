@@ -1,8 +1,6 @@
 #ifndef CHIP8_STACK_H
 #define CHIP8_STACK_H
 
-#define STACK_SIZE 16
-
 #include <stdint.h>
 
 #include "state.h"
