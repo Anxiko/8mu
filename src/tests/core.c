@@ -69,6 +69,11 @@ void test_memory_write() {
 	TEST_ASSERT_TRUE(state_equals(&expected_state, &cpu_state));
 }
 
+void test_memory_character_address() {
+	TEST_ASSERT_EQUAL_UINT16(0x50, character_address(0));
+	TEST_ASSERT_EQUAL_UINT16(0x9B, character_address(15));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -79,6 +84,7 @@ int main() {
 
 	RUN_TEST(test_memory_read);
 	RUN_TEST(test_memory_write);
+	RUN_TEST(test_memory_character_address);
 
 	return UNITY_END();
 }
