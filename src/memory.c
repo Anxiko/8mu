@@ -16,6 +16,6 @@ void write_word_memory(CpuState *cpu_state, uint16_t address, uint16_t word) {
 	write_word_to_array(cpu_state->memory, address, word);
 }
 
-uint16_t character_address(CpuState *cpu_state, uint8_t c) {
+uint16_t character_address(uint8_t c) {
 	return FONT_ADDRESS_START + c * CHARACTER_HEIGHT;
 }
