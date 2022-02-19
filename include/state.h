@@ -3,13 +3,15 @@
 
 #include <stdint.h>
 
-typedef struct CpuState {
+typedef struct {
 	uint8_t *memory;
 	uint16_t program_counter;
 	uint16_t index_register;
 	uint8_t *register_bank;
+	uint16_t *stack;
+	uint8_t stack_size;
 	uint8_t *display;
 
-} CpuStateStruct;
+} CpuState;
 
 #endif //CHIP8_STATE_H

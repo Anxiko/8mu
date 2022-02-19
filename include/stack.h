@@ -5,8 +5,10 @@
 
 #include <stdint.h>
 
-uint16_t stack_pop();
+#include "state.h"
 
-void stack_push(uint16_t v);
+uint16_t stack_pop(CpuState *cpu_state);
+
+void stack_push(CpuState *cpu_state, uint16_t v);
 
 #endif //CHIP8_STACK_H
