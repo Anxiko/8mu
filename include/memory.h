@@ -1,13 +1,6 @@
 #ifndef CHIP8_MEMORY_H
 #define CHIP8_MEMORY_H
 
-#define CHARACTER_HEIGHT 5
-#define NUMBER_OF_CHARACTERS 16
-
-#define ROM_ADDRESS_START 512
-#define FONT_ADDRESS_START 0x0050
-#define ROM_SIZE (MEMORY_SIZE - ROM_ADDRESS_START)
-
 #include <stdint.h>
 #include <string.h>
 
