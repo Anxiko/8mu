@@ -15,6 +15,11 @@
 #include <stdbool.h>
 
 typedef struct {
+	int64_t set_ts_millis;
+	uint8_t set_value;
+} TimerRegister;
+
+typedef struct {
 	// Memory
 	uint8_t memory[MEMORY_SIZE];
 	uint16_t stack[STACK_SIZE];
@@ -31,6 +36,10 @@ typedef struct {
 
 	// Keyboard
 	bool keyboard[NUMBER_OF_KEYS];
+
+	// Timers
+	TimerRegister delay_timer;
+	TimerRegister sound_timer;
 } CpuState;
 
 #endif //CHIP8_STATE_H

@@ -1,13 +1,5 @@
 #include "timers.h"
 
-typedef struct TimerRegisterStruct {
-	int64_t set_ts_millis;
-	uint8_t set_value;
-} TimerRegister;
-
-TimerRegister delay_timer = {0, 0};
-TimerRegister sound_timer = {0, 0};
-
 int64_t time_millis() {
 	struct timespec ts;
 	clock_gettime(CLOCK_REALTIME, &ts);
@@ -38,20 +30,20 @@ void write_to_timer(TimerRegister *timer, uint8_t value) {
 	timer->set_value = value;
 }
 
-void refresh_timers() {
-	read_timer(&delay_timer);
-	uint8_t sound_ticks = read_timer(&sound_timer);
-	set_beeper_state(sound_ticks > 0? true : false);
+void refresh_timers(CpuState *cpu_state) {
+	read_timer(&cpu_state->delay_timer);
+	uint8_t sound_ticks = read_timer(&cpu_state->sound_timer);
+	set_beeper_state(cpu_state, sound_ticks > 0? true : false);
 }
 
-uint8_t read_delay_timer() {
-	return read_timer(&delay_timer);
+uint8_t read_delay_timer(CpuState *cpu_state) {
+	return read_timer(&cpu_state->delay_timer);
 }
 
-void write_delay_timer(uint8_t delay) {
-	write_to_timer(&delay_timer, delay);
+void write_delay_timer(CpuState *cpu_state, uint8_t delay) {
+	write_to_timer(&cpu_state->delay_timer, delay);
 }
 
-void write_sound_timer(uint8_t delay) {
-	write_to_timer(&sound_timer, delay);
+void write_sound_timer(CpuState *cpu_state, uint8_t delay) {
+	write_to_timer(&cpu_state->sound_timer, delay);
 }
