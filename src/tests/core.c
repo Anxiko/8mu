@@ -4,6 +4,7 @@
 #include "beeper.h"
 #include "keyboard.h"
 #include "memory.h"
+#include "registers.h"
 
 CpuState cpu_state;
 
@@ -74,6 +75,19 @@ void test_memory_character_address() {
 	TEST_ASSERT_EQUAL_UINT16(0x9B, character_address(15));
 }
 
+void test_register_program_counter() {
+	TEST_ASSERT_EQUAL_UINT8(ROM_ADDRESS_START, read_register_pc(&cpu_state));
+
+	CpuState expected_cpu_state;
+	init_state(&expected_cpu_state, NULL);
+
+	write_register_pc(&cpu_state, 0x123);
+	expected_cpu_state.program_counter = 0x123;
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	TEST_ASSERT_EQUAL_UINT16(0x123, read_register_pc(&cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -85,6 +99,8 @@ int main() {
 	RUN_TEST(test_memory_read);
 	RUN_TEST(test_memory_write);
 	RUN_TEST(test_memory_character_address);
+
+	RUN_TEST(test_register_program_counter);
 
 	return UNITY_END();
 }
