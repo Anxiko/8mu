@@ -97,6 +97,27 @@ void test_register_index_register() {
 	TEST_ASSERT_EQUAL_UINT16(0x123, read_index_register(&cpu_state));
 }
 
+void test_register_bank() {
+	uint8_t expected_register_bank[REGISTERS] = {
+			0x10, 0x11, 0x12, 0x13,
+			0x14, 0x15, 0x16, 0x17,
+			0x18, 0x19, 0x1A, 0x1B,
+			0x1C, 0x1D, 0x1E, 0x1F
+	};
+	CpuState expected_cpu_state;
+	init_state(&expected_cpu_state, NULL);
+	memcpy(expected_cpu_state.register_bank, expected_register_bank, REGISTERS);
+
+	for (uint8_t i = 0; i < REGISTERS; ++i) {
+		write_register_bank(&cpu_state, i, i + 0x10);
+	}
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	for (uint8_t i = 0; i < REGISTERS; ++i) {
+		TEST_ASSERT_EQUAL_UINT8(i + 0x10, read_register_bank(&cpu_state, i));
+	}
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -111,6 +132,7 @@ int main() {
 
 	RUN_TEST(test_register_program_counter);
 	RUN_TEST(test_register_index_register);
+	RUN_TEST(test_register_bank);
 
 	return UNITY_END();
 }
