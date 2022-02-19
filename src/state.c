@@ -33,6 +33,15 @@ void initialize_timer(TimerRegister *timer_register) {
 	timer_register->set_value = 0;
 }
 
+void copy_timer(TimerRegister *dst, const TimerRegister *src) {
+	dst->set_value = src->set_value;
+	dst->set_ts_millis = src->set_ts_millis;
+}
+
+bool timer_equals(const TimerRegister *left, const TimerRegister *right) {
+	return left->set_ts_millis == right->set_ts_millis && left->set_value && right->set_ts_millis;
+}
+
 void init_state(CpuState *cpu_state, const uint8_t *rom) {
 	initialize_memory(cpu_state->memory, rom);
 	memset(cpu_state->stack, 0, STACK_SIZE * 2);
@@ -47,4 +56,44 @@ void init_state(CpuState *cpu_state, const uint8_t *rom) {
 
 	initialize_timer(&cpu_state->delay_timer);
 	initialize_timer(&cpu_state->sound_timer);
+}
+
+void copy_state(CpuState *dst, const CpuState *src) {
+	memcpy(dst->memory, src->memory, MEMORY_SIZE);
+	memcpy(dst->stack, src->stack, STACK_SIZE * 2);
+	dst->stack_size = src->stack_size;
+
+	dst->program_counter = src->program_counter;
+	dst->index_register = src->index_register;
+	memcpy(dst->register_bank, src->register_bank, REGISTERS);
+
+	memcpy(dst->display, src->display, SCREEN_SIZE_BYTES);
+	dst->sound_playing = src->sound_playing;
+
+	copy_timer(&dst->delay_timer, &src->delay_timer);
+	copy_timer(&dst->sound_timer, &src->sound_timer);
+}
+
+bool state_equals(const CpuState *left, const CpuState *right) {
+	return (
+		memcmp(left->memory, right->memory, MEMORY_SIZE) == 0
+		&&
+		memcmp(left->stack, right->stack, STACK_SIZE * 2) == 0
+		&&
+		left->stack_size == right->stack_size
+		&&
+		left->program_counter == right->program_counter
+		&&
+		left->index_register == right->index_register
+		&&
+		memcmp(left->register_bank, right->register_bank, REGISTERS * 2) == 0
+		&&
+		memcmp(left->display, right->display, SCREEN_SIZE_BYTES) == 0
+		&&
+		left->sound_playing == right->sound_playing
+		&&
+		timer_equals(&left->delay_timer, &right->delay_timer)
+		&&
+		timer_equals(&left->sound_timer, &right->sound_timer)
+	);
 }

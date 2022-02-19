@@ -52,4 +52,8 @@ typedef struct {
 
 void init_state(CpuState *cpu_state, const uint8_t *rom);
 
+void copy_state(CpuState *dst, const CpuState *src);
+
+bool state_equals(const CpuState *left, const CpuState *right);
+
 #endif //CHIP8_STATE_H
