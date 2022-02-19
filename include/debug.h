@@ -5,6 +5,6 @@
 #include <stdio.h>
 #include "screen.h"
 
-void print_display();
+void print_display(CpuState *cpu_state);
 
 #endif //CHIP8_DEBUG_H
