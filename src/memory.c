@@ -1,49 +1,21 @@
 #include "memory.h"
 
-// Place from 0x050 to 0x09F
-const uint8_t FONT[CHARACTER_HEIGHT * NUMBER_OF_CHARACTERS] = {
-	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
-	0x20, 0x60, 0x20, 0x20, 0x70, // 1
-	0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
-	0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
-	0x90, 0x90, 0xF0, 0x10, 0x10, // 4
-	0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
-	0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
-	0xF0, 0x10, 0x20, 0x40, 0x40, // 7
-	0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
-	0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
-	0xF0, 0x90, 0xF0, 0x90, 0x90, // A
-	0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
-	0xF0, 0x80, 0x80, 0x80, 0xF0, // C
-	0xE0, 0x90, 0x90, 0x90, 0xE0, // D
-	0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-	0xF0, 0x80, 0xF0, 0x80, 0x80  // F
-};
-
-uint8_t memory[MEMORY_SIZE];
-
-void initialize_memory(const uint8_t *rom) {
-	memset(memory, 0, MEMORY_SIZE);
-	memcpy(memory + FONT_ADDRESS_START, FONT, CHARACTER_HEIGHT * NUMBER_OF_CHARACTERS);
-	memcpy(memory + ROM_ADDRESS_START, rom, ROM_SIZE);
+uint8_t read_byte_memory(CpuState *cpu_state, uint16_t address) {
+	return cpu_state->memory[address];
 }
 
-uint8_t read_byte_memory(uint16_t address) {
-	return memory[address];
+uint16_t read_word_memory(CpuState *cpu_state, uint16_t address) {
+	return read_word_from_array(cpu_state->memory, address);
 }
 
-uint16_t read_word_memory(uint16_t address) {
-	return read_word_from_array(memory, address);
+void write_byte_memory(CpuState *cpu_state, uint16_t address, uint8_t value) {
+	cpu_state->memory[address] = value;
 }
 
-void write_byte_memory(uint16_t address, uint8_t value) {
-	memory[address] = value;
+void write_word_memory(CpuState *cpu_state, uint16_t address, uint16_t word) {
+	write_word_to_array(cpu_state->memory, address, word);
 }
 
-void write_word_memory(uint16_t address, uint16_t word) {
-	write_word_to_array(memory, address, word);
-}
-
-uint16_t character_address(uint8_t c) {
+uint16_t character_address(CpuState *cpu_state, uint8_t c) {
 	return FONT_ADDRESS_START + c * CHARACTER_HEIGHT;
 }

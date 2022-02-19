@@ -11,8 +11,16 @@
 
 #define NUMBER_OF_KEYS 16
 
+#define CHARACTER_HEIGHT 5
+#define NUMBER_OF_CHARACTERS 16
+
+#define ROM_ADDRESS_START 512
+#define FONT_ADDRESS_START 0x0050
+#define ROM_SIZE (MEMORY_SIZE - ROM_ADDRESS_START)
+
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef struct {
 	int64_t set_ts_millis;
@@ -41,5 +49,7 @@ typedef struct {
 	TimerRegister delay_timer;
 	TimerRegister sound_timer;
 } CpuState;
+
+void init_state(CpuState *cpu_state, const uint8_t *rom);
 
 #endif //CHIP8_STATE_H

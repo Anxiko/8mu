@@ -10,18 +10,18 @@
 
 #include <stdint.h>
 #include <string.h>
+
+#include "state.h"
 #include "utils.h"
 
-void initialize_memory(const uint8_t *rom);
+uint8_t read_byte_memory(CpuState *cpu_state, uint16_t address);
 
-uint8_t read_byte_memory(uint16_t address);
+uint16_t read_word_memory(CpuState *cpu_state, uint16_t address);
 
-uint16_t read_word_memory(uint16_t address);
+void write_byte_memory(CpuState *cpu_state, uint16_t address, uint8_t value);
 
-void write_byte_memory(uint16_t address, uint8_t value);
+void write_word_memory(CpuState *cpu_state, uint16_t address, uint16_t word);
 
-void write_word_memory(uint16_t address, uint16_t word);
-
-uint16_t character_address(uint8_t c);
+uint16_t character_address(CpuState *cpu_state, uint8_t c);
 
 #endif //CHIP8_MEMORY_H
