@@ -9,10 +9,13 @@
 #include "stack.h"
 #include "timers.h"
 
+#include "mock_time_millis.h"
+
 CpuState cpu_state;
 
 void setUp() {
 	init_state(&cpu_state, NULL);
+	mock_set_time_millis(0);
 }
 
 void tearDown() {
@@ -195,6 +198,106 @@ void test_stack() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_timer_read_delay_timer() {
+	CpuState expected_cpu_state;
+	init_state(&expected_cpu_state, NULL);
+
+	int64_t time_millis = 1645378224LL * 1000LL; // Real unix epoch timestamp, converted into ms
+	mock_set_time_millis(time_millis);
+
+	// Before being set, it should be 0
+	TEST_ASSERT_EQUAL_UINT8(0, read_delay_timer(&cpu_state));
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	cpu_state.delay_timer.set_ts_millis = time_millis;
+	cpu_state.delay_timer.set_value = 100;
+	expected_cpu_state.delay_timer.set_ts_millis = time_millis;
+	expected_cpu_state.delay_timer.set_value = 100;
+
+	// After being set, no time has passed
+	TEST_ASSERT_EQUAL_UINT8(100, read_delay_timer(&cpu_state));
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	// Pass a second, timer should decrease by 60
+	mock_set_time_millis(time_millis + 1000LL);
+	TEST_ASSERT_EQUAL_UINT8(40, read_delay_timer(&cpu_state));
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	// Pass the set time of ticks, value should be 0
+	mock_set_time_millis(time_millis + 100LL * 1000LL);
+	TEST_ASSERT_EQUAL_UINT8(0, read_delay_timer(&cpu_state));
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	// More ticks have passed than the set value
+	mock_set_time_millis(time_millis + 101LL * 1000LL);
+	TEST_ASSERT_EQUAL_UINT8(0, read_delay_timer(&cpu_state));
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	// Times before the set timer timestamp returns the set value
+	mock_set_time_millis(time_millis - 100LL * 1000LL);
+	TEST_ASSERT_EQUAL_UINT8(100, read_delay_timer(&cpu_state));
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	// Timer is 0 if timestamp isn't set, even if there is a non-zero value
+	cpu_state.delay_timer.set_ts_millis = 0;
+	expected_cpu_state.delay_timer.set_ts_millis = 0;
+	mock_set_time_millis(time_millis);
+	TEST_ASSERT_EQUAL_UINT8(0, read_delay_timer(&cpu_state));
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_timer_write_delay_timer() {
+	CpuState expected_cpu_state;
+	init_state(&expected_cpu_state, NULL);
+
+	int64_t time_millis = 1645378224LL * 1000LL; // Real unix epoch timestamp, converted into ms
+	mock_set_time_millis(time_millis);
+
+	write_delay_timer(&cpu_state, 100);
+	expected_cpu_state.delay_timer.set_ts_millis = time_millis;
+	expected_cpu_state.delay_timer.set_value = 100;
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_timer_write_sound_timer() {
+	CpuState expected_cpu_state;
+	init_state(&expected_cpu_state, NULL);
+
+	int64_t time_millis = 1645378224LL * 1000LL; // Real unix epoch timestamp, converted into ms
+	mock_set_time_millis(time_millis);
+
+	write_sound_timer(&cpu_state, 100);
+	expected_cpu_state.sound_timer.set_ts_millis = time_millis;
+	expected_cpu_state.sound_timer.set_value = 100;
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_timer_refresh_timer() {
+	CpuState expected_cpu_state;
+	init_state(&expected_cpu_state, NULL);
+
+	// Off by default
+	update_beeper_status(&expected_cpu_state);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	int64_t time_millis = 1645378224LL * 1000LL; // Real unix epoch timestamp, converted into ms
+	mock_set_time_millis(time_millis);
+
+	cpu_state.sound_timer.set_ts_millis = expected_cpu_state.sound_timer.set_ts_millis = time_millis;
+	cpu_state.sound_timer.set_value = expected_cpu_state.sound_timer.set_value = 100;
+
+	// Timer set, no time has passed
+	update_beeper_status(&cpu_state);
+	expected_cpu_state.sound_playing = true;
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	// Timer set, just expired, sound should have been turned off
+	mock_set_time_millis(time_millis + 1000LL * 100LL);
+	update_beeper_status(&cpu_state);
+	expected_cpu_state.sound_playing = false;
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -216,6 +319,11 @@ int main() {
 	RUN_TEST(test_screen_write_pixel_to_screen);
 
 	RUN_TEST(test_stack);
+
+	RUN_TEST(test_timer_read_delay_timer);
+	RUN_TEST(test_timer_write_delay_timer);
+	RUN_TEST(test_timer_write_sound_timer);
+	RUN_TEST(test_timer_refresh_timer);
 
 	return UNITY_END();
 }

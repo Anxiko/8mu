@@ -11,6 +11,6 @@ void write_delay_timer(CpuState *cpu_state, uint8_t delay);
 
 void write_sound_timer(CpuState *cpu_state, uint8_t delay);
 
-void refresh_timers(CpuState *cpu_state);
+void update_beeper_status(CpuState *cpu_state);
 
 #endif //CHIP8_TIMERS_H

@@ -1,20 +1,25 @@
 #include "timers.h"
 
-uint8_t read_timer(TimerRegister *timer) {
+uint8_t read_timer(const TimerRegister *timer) {
 	if (timer->set_ts_millis == 0) {
 		return 0;
 	}
 
 	int64_t current_time = time_millis();
-	int64_t ticks_elapsed = (60 * current_time) / 1000;
-
-	if (ticks_elapsed > timer->set_value) {
-		timer->set_value = 0;
-		timer->set_ts_millis = 0;
-		return 0;
+	int64_t time_elapsed;
+	if (current_time >= timer->set_ts_millis) {
+		time_elapsed = current_time - timer->set_ts_millis;
+	} else {
+		// This should never happen, since the current time should always be greater than the set timer.
+		time_elapsed = 0;
 	}
 
-	return timer->set_value - ticks_elapsed;
+	int64_t ticks_elapsed = (60 * time_elapsed) / 1000;
+
+	if (timer->set_value >= ticks_elapsed) {
+		return timer->set_value - ticks_elapsed;
+	}
+	return 0;
 }
 
 void write_to_timer(TimerRegister *timer, uint8_t value) {
@@ -23,8 +28,7 @@ void write_to_timer(TimerRegister *timer, uint8_t value) {
 	timer->set_value = value;
 }
 
-void refresh_timers(CpuState *cpu_state) {
-	read_timer(&cpu_state->delay_timer);
+void update_beeper_status(CpuState *cpu_state) {
 	uint8_t sound_ticks = read_timer(&cpu_state->sound_timer);
 	set_beeper_state(cpu_state, sound_ticks > 0? true : false);
 }
