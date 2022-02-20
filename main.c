@@ -68,9 +68,6 @@ int main(int argc, const char *argv[]) {
 	printf("Read %d byte(s)\n", bytes_read);
 	fclose(file_ptr);
 
-	initialize_memory(rom);
-	initialize_registers();
-
 	bool running = true;
 	SDL_Event e;
 

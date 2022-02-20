@@ -1,9 +1,5 @@
 #include "registers.h"
 
-void initialize_registers(CpuState *cpu_state) {
-	write_register_pc(cpu_state, ROM_ADDRESS_START);
-}
-
 uint16_t read_register_pc(CpuState *cpu_state) {
 	return cpu_state->program_counter;
 }

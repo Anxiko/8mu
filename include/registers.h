@@ -6,8 +6,6 @@
 #include "state.h"
 #include "memory.h"
 
-void initialize_registers(CpuState *cpu_state);
-
 uint16_t read_register_pc(CpuState *cpu_state);
 
 void write_register_pc(CpuState *cpu_state, uint16_t v);
