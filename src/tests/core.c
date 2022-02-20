@@ -6,6 +6,7 @@
 #include "memory.h"
 #include "registers.h"
 #include "screen.h"
+#include "stack.h"
 
 CpuState cpu_state;
 
@@ -169,6 +170,30 @@ void test_screen_write_pixel_to_screen() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_stack() {
+	CpuState expected_cpu_state;
+	init_state(&expected_cpu_state, NULL);
+	uint16_t expected_stack[STACK_SIZE] = {
+			0x10, 0x11, 0x12, 0x13,
+			0x14, 0x15, 0x16, 0x17,
+			0x18, 0x19, 0x1A, 0x1B,
+			0x1C, 0x1D, 0x1E, 0x1F
+	};
+	memcpy(expected_cpu_state.stack, expected_stack, 2 * STACK_SIZE);
+	expected_cpu_state.stack_size = STACK_SIZE;
+
+	for (int i = 0; i < STACK_SIZE; ++i) {
+		stack_push(&cpu_state, i + 0x10);
+	}
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+
+	for (int i = STACK_SIZE - 1; i >= 0; --i) {
+		TEST_ASSERT_EQUAL_UINT16(i + 0x10, stack_pop(&cpu_state));
+	}
+	expected_cpu_state.stack_size = 0;
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -188,6 +213,8 @@ int main() {
 	RUN_TEST(test_screen_fill_screen);
 	RUN_TEST(test_screen_read_pixel_from_screen);
 	RUN_TEST(test_screen_write_pixel_to_screen);
+
+	RUN_TEST(test_stack);
 
 	return UNITY_END();
 }
