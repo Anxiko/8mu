@@ -1,12 +1,5 @@
 #include "timers.h"
 
-int64_t time_millis() {
-	struct timespec ts;
-	clock_gettime(CLOCK_REALTIME, &ts);
-
-	return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-}
-
 uint8_t read_timer(TimerRegister *timer) {
 	if (timer->set_ts_millis == 0) {
 		return 0;

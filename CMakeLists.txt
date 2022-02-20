@@ -16,6 +16,7 @@ find_package(SDL2 REQUIRED)
 
 include_directories(
 		${PROJECT_SOURCE_DIR}/include
+		${PROJECT_SOURCE_DIR}/include/mock
 		${SDL2_INCLUDE_DIR}
 		${SDL2_MIXER_INCLUDE_DIR}
 )
@@ -33,6 +34,11 @@ set(
 		src/beeper.c
 )
 
+set(
+		SRC_MOCK
+		src/mock/mock_time_millis.c
+)
+
 add_executable(
 		chip8
 		main.c
@@ -48,6 +54,7 @@ add_executable(
 		src/tests/instructions.c
 		src/unity.c
 		${SRC_CORE}
+		${SRC_MOCK}
 )
 
 add_executable(
@@ -55,6 +62,7 @@ add_executable(
 		src/tests/core.c
 		src/unity.c
 		${SRC_CORE}
+		${SRC_MOCK}
 )
 
 target_link_libraries(

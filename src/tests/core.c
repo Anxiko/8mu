@@ -7,6 +7,7 @@
 #include "registers.h"
 #include "screen.h"
 #include "stack.h"
+#include "timers.h"
 
 CpuState cpu_state;
 
