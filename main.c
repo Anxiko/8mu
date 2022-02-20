@@ -69,6 +69,7 @@ int main(int argc, const char *argv[]) {
 	fclose(file_ptr);
 
 	init_state(&cpu_state, rom);
+	bool current_sound_state = false;
 
 	bool running = true;
 	SDL_Event e;
@@ -93,6 +94,7 @@ int main(int argc, const char *argv[]) {
 
 		update_beeper_status(&cpu_state);
 		update_keyboard_state(&cpu_state);
+		play_beeper(&cpu_state, &current_sound_state, mix_chunk);
 
 		SDL_Delay(2);
 	}
