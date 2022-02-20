@@ -39,10 +39,16 @@ set(
 		src/mock/mock_time_millis.c
 )
 
+set(
+		SRC_REAL
+		src/time_millis.c
+)
+
 add_executable(
 		chip8
 		main.c
 		${SRC_CORE}
+		${SRC_REAL}
 		src/cpu.c
 		src/instructions.c
 		src/debug.c

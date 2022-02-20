@@ -18,6 +18,7 @@
 
 
 uint8_t rom[ROM_SIZE];
+CpuState cpu_state;
 
 void quit_on_sdl_error(bool error, const char *error_msg);
 
@@ -47,7 +48,6 @@ int main(int argc, const char *argv[]) {
 		fprintf(stderr, "Failed to load sound effect");
 		exit(EXIT_FAILURE);
 	}
-	set_mixer_chunk(mix_chunk);
 
 	SDL_Window *window = SDL_CreateWindow(
 		"Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -68,16 +68,18 @@ int main(int argc, const char *argv[]) {
 	printf("Read %d byte(s)\n", bytes_read);
 	fclose(file_ptr);
 
+	init_state(&cpu_state, rom);
+
 	bool running = true;
 	SDL_Event e;
 
 	while (running) {
-		uint16_t instruction = fetch(NULL);
+		uint16_t instruction = fetch(&cpu_state);
 		Instruction *function = decode(instruction);
-		execute(NULL, instruction, function);
+		execute(&cpu_state, instruction, function);
 
 		// print_display();
-		render_display(renderer);
+		render_display(&cpu_state, renderer);
 		SDL_UpdateWindowSurface(window);
 
 		while (SDL_PollEvent(&e)) {
@@ -89,10 +91,12 @@ int main(int argc, const char *argv[]) {
 			}
 		}
 
+		update_beeper_status(&cpu_state);
+		update_keyboard_state(&cpu_state);
+
 		SDL_Delay(2);
 	}
 
-	set_mixer_chunk(NULL);
 	Mix_FreeChunk(mix_chunk);
 	Mix_CloseAudio();
 
