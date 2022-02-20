@@ -8,7 +8,6 @@
 #include "cpu.h"
 #include "debug.h"
 #include "emulator.h"
-#include "beeper.h"
 
 #include "SDL.h"
 #include "SDL_mixer.h"
