@@ -1,11 +1,11 @@
 #include "cpu.h"
 
 
-uint16_t fetch() {
-	uint16_t pc = read_register_pc();
-	write_register_pc(pc + INSTRUCTION_SIZE);
+uint16_t fetch(CpuState *cpu_state) {
+	uint16_t pc = read_register_pc(cpu_state);
+	write_register_pc(cpu_state, pc + INSTRUCTION_SIZE);
 
-	return read_word_memory(pc);
+	return read_word_memory(cpu_state, pc);
 }
 
 Instruction *decode(uint16_t instruction) {
@@ -97,10 +97,10 @@ Instruction *decode(uint16_t instruction) {
 	return NULL;
 }
 
-void execute(uint16_t instruction, Instruction function) {
+void execute(CpuState *cpu_state, uint16_t instruction, Instruction function) {
 	if (function == NULL) {
 		fprintf(stderr, "Could not decode instruction: %X", instruction);
 		exit(EXIT_FAILURE);
 	}
-	function(instruction);
+	function(cpu_state, instruction);
 }

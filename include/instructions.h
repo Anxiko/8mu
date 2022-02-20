@@ -46,88 +46,88 @@
 
 /* Graphics */
 
-void clear_screen(__attribute__((unused)) uint16_t _instruction);
+void clear_screen(CpuState *cpu_state, __attribute__((unused)) uint16_t _instruction);
 
-void draw(uint16_t instruction);
+void draw(CpuState *cpu_state, uint16_t instruction);
 
 /* Jumping and subroutines */
 
-void jump(uint16_t instruction);
+void jump(CpuState *cpu_state, uint16_t instruction);
 
-void jump_subroutine(uint16_t instruction);
+void jump_subroutine(CpuState *cpu_state, uint16_t instruction);
 
-void jump_with_offset(uint16_t instruction);
+void jump_with_offset(CpuState *cpu_state, uint16_t instruction);
 
-void return_subroutine(__attribute__((unused)) uint16_t);
+void return_subroutine(CpuState *cpu_state, __attribute__((unused)) uint16_t _instruction);
 
 /* Conditionals */
 
-void skip_if_equal_to_immediate(uint16_t instruction);
+void skip_if_equal_to_immediate(CpuState *cpu_state, uint16_t instruction);
 
-void skip_if_different_from_immediate(uint16_t instruction);
+void skip_if_different_from_immediate(CpuState *cpu_state, uint16_t instruction);
 
-void skip_if_registers_equal(uint16_t instruction);
+void skip_if_registers_equal(CpuState *cpu_state, uint16_t instruction);
 
-void skip_if_registers_different(uint16_t instruction);
+void skip_if_registers_different(CpuState *cpu_state, uint16_t instruction);
 
-void skip_pressed(uint16_t instruction);
+void skip_pressed(CpuState *cpu_state, uint16_t instruction);
 
-void skip_not_pressed(uint16_t instruction);
+void skip_not_pressed(CpuState *cpu_state, uint16_t instruction);
 
 /* Registers */
 
-void copy_register(uint16_t instruction);
+void copy_register(CpuState *cpu_state, uint16_t instruction);
 
-void set_register_to_immediate(uint16_t instruction);
+void set_register_to_immediate(CpuState *cpu_state, uint16_t instruction);
 
-void set_index_register(uint16_t instruction);
+void set_index_register(CpuState *cpu_state, uint16_t instruction);
 
 /* Memory */
 
-void save_registers(uint16_t instruction);
+void save_registers(CpuState *cpu_state, uint16_t instruction);
 
-void load_registers(uint16_t instruction);
+void load_registers(CpuState *cpu_state, uint16_t instruction);
 
 /* Arithmetic */
 
-void add_immediate_to_register(uint16_t instruction);
+void add_immediate_to_register(CpuState *cpu_state, uint16_t instruction);
 
-void add_to_index(uint16_t instruction);
+void add_to_index(CpuState *cpu_state, uint16_t instruction);
 
-void add_register_to_register(uint16_t instruction);
+void add_register_to_register(CpuState *cpu_state, uint16_t instruction);
 
-void sub_register_from_register(uint16_t instruction);
+void sub_register_from_register(CpuState *cpu_state, uint16_t instruction);
 
-void negative_sub_register_from_register(uint16_t instruction);
+void negative_sub_register_from_register(CpuState *cpu_state, uint16_t instruction);
 
-void decimal_decode(uint16_t instruction);
+void decimal_decode(CpuState *cpu_state, uint16_t instruction);
 
 /* Bit operations */
 
-void bitwise_or(uint16_t instruction);
+void bitwise_or(CpuState *cpu_state, uint16_t instruction);
 
-void bitwise_and(uint16_t instruction);
+void bitwise_and(CpuState *cpu_state, uint16_t instruction);
 
-void bitwise_xor(uint16_t instruction);
+void bitwise_xor(CpuState *cpu_state, uint16_t instruction);
 
-void shift_left(uint16_t instruction);
+void shift_left(CpuState *cpu_state, uint16_t instruction);
 
-void shift_right(uint16_t instruction);
+void shift_right(CpuState *cpu_state, uint16_t instruction);
 
 /* Misc */
 
-void set_register_to_bitmasked_rand(uint16_t instruction);
+void set_register_to_bitmasked_rand(CpuState *cpu_state, uint16_t instruction);
 
 /* I/O */
 
-void read_delay(uint16_t instruction);
+void read_delay(CpuState *cpu_state, uint16_t instruction);
 
-void set_delay(uint16_t instruction);
+void set_delay(CpuState *cpu_state, uint16_t instruction);
 
-void set_sound(uint16_t instruction);
+void set_sound(CpuState *cpu_state, uint16_t instruction);
 
-void wait_for_key(uint16_t instruction);
+void wait_for_key(CpuState *cpu_state, uint16_t instruction);
 
-void point_to_char(uint16_t instruction);
+void point_to_char(CpuState *cpu_state, uint16_t instruction);
 
 #endif //CHIP8_INSTRUCTIONS_H

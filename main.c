@@ -75,9 +75,9 @@ int main(int argc, const char *argv[]) {
 	SDL_Event e;
 
 	while (running) {
-		uint16_t instruction = fetch();
+		uint16_t instruction = fetch(NULL);
 		Instruction *function = decode(instruction);
-		execute(instruction, function);
+		execute(NULL, instruction, function);
 
 		// print_display();
 		render_display(renderer);
