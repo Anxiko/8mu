@@ -20,6 +20,8 @@ void write_pixel_to_screen(CpuState *cpu_state, uint8_t x, uint8_t y, uint8_t va
 	uintptr_t pixel_byte_address = pixel_address / 8;
 	uintptr_t pixel_offset_in_byte = pixel_address % 8;
 
+	value = value ? 1 : 0;
+
 	uint8_t pixel_byte = cpu_state->display[pixel_byte_address];
 	uint8_t mask = ~(1 << pixel_offset_in_byte);
 	pixel_byte = (pixel_byte & mask) | (value << pixel_offset_in_byte);
