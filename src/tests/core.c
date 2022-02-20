@@ -5,6 +5,7 @@
 #include "keyboard.h"
 #include "memory.h"
 #include "registers.h"
+#include "screen.h"
 
 CpuState cpu_state;
 
@@ -118,6 +119,56 @@ void test_register_bank() {
 	}
 }
 
+void test_screen_fill_screen() {
+	CpuState expected_cpu_state;
+	init_state(&expected_cpu_state, NULL);
+
+	bool colors[2] = {COLOR_WHITE, COLOR_BLACK};
+	for (int i = 0; i < 2; ++i) {
+		fill_screen(&cpu_state, colors[i]);
+		memset(expected_cpu_state.display, colors[i] ? 0xFF : 0x00, SCREEN_SIZE_BYTES);
+		TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+	}
+}
+
+void test_screen_read_pixel_from_screen() {
+	const uint8_t display[SCREEN_SIZE_BYTES] = {
+			0b10101010,
+			// Jump to the next row
+			0, 0, 0, 0, 0, 0, 0,
+			0b01010101
+	};
+	memcpy(cpu_state.display, display, SCREEN_SIZE_BYTES);
+
+	TEST_ASSERT_EQUAL_UINT8(COLOR_BLACK, read_pixel_from_screen(&cpu_state, 0, 0));
+	TEST_ASSERT_EQUAL_UINT8(COLOR_WHITE, read_pixel_from_screen(&cpu_state, 1, 0));
+
+	TEST_ASSERT_EQUAL_UINT8(COLOR_WHITE, read_pixel_from_screen(&cpu_state, 0, 1));
+	TEST_ASSERT_EQUAL_UINT8(COLOR_BLACK, read_pixel_from_screen(&cpu_state, 1, 1));
+}
+
+void test_screen_write_pixel_to_screen() {
+	CpuState expected_cpu_state;
+	init_state(&expected_cpu_state, NULL);
+	const uint8_t display[SCREEN_SIZE_BYTES] = {
+			0b10101010,
+			// Jump to the next row
+			0, 0, 0, 0, 0, 0, 0,
+			0b01010101
+	};
+	memcpy(expected_cpu_state.display, display, SCREEN_SIZE_BYTES);
+
+	for (int x = 0; x < 8; ++x) {
+		write_pixel_to_screen(&cpu_state, x, 0, x % 2 == 0 ? COLOR_BLACK : COLOR_WHITE);
+	}
+
+	for (int x = 0; x < 8; ++x) {
+		write_pixel_to_screen(&cpu_state, x, 1, x % 2 == 0 ? COLOR_WHITE : COLOR_BLACK);
+	}
+
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -133,6 +184,10 @@ int main() {
 	RUN_TEST(test_register_program_counter);
 	RUN_TEST(test_register_index_register);
 	RUN_TEST(test_register_bank);
+
+	RUN_TEST(test_screen_fill_screen);
+	RUN_TEST(test_screen_read_pixel_from_screen);
+	RUN_TEST(test_screen_write_pixel_to_screen);
 
 	return UNITY_END();
 }
