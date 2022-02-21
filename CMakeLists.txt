@@ -61,6 +61,7 @@ add_executable(
 		src/unity.c
 		${SRC_CORE}
 		${SRC_MOCK}
+		src/instructions.c
 )
 
 add_executable(
