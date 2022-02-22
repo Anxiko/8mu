@@ -32,6 +32,7 @@ set(
 		src/keyboard.c
 		src/timers.c
 		src/beeper.c
+		src/debug.c
 )
 
 set(
