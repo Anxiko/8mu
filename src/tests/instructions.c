@@ -87,6 +87,35 @@ void test_draw_blank() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+// Draw on top of some white pixels, so they cause a collision
+void test_draw_on_top() {
+	const uint8_t x = 30, y = 20;
+
+	uint16_t character_zero = character_address(0);
+	cpu_state.index_register = character_zero;
+	cpu_state.register_bank[0] = x;
+	cpu_state.register_bank[1] = y;
+
+	write_pixel_to_screen(&cpu_state, x, y, COLOR_WHITE);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+
+	uint16_t instruction = 0xD000;
+	instruction |= 0x0 << 8; // VX = V0
+	instruction |= 0x1 << 4; // VY = V1
+	instruction |= 0x5 << 0; // N = 5
+
+	const uint8_t rows[5] = {0xF0 ^ 0x80, 0x90, 0x90, 0x90, 0xF0};
+	draw_to_expected_cpu_state(
+		&expected_cpu_state, x, y, rows, sizeof(rows), true);
+	expected_cpu_state.register_bank[STATUS_REGISTER] = 0x01;
+
+	draw(&cpu_state, instruction);
+
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 
 int main() {
 	UNITY_BEGIN();
@@ -94,6 +123,7 @@ int main() {
 	RUN_TEST(test_clear_screen);
 
 	RUN_TEST(test_draw_blank);
+	RUN_TEST(test_draw_on_top);
 
 	return UNITY_END();
 }
