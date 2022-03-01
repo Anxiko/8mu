@@ -116,14 +116,40 @@ void test_draw_on_top() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+// Draw outside the screen, drawings shouldn't warp
+void test_draw_no_wrap() {
+	const uint8_t x = SCREEN_WIDTH - 3 , y = SCREEN_HEIGHT - 3;
+
+	uint16_t character_zero = character_address(0);
+	cpu_state.index_register = character_zero;
+	cpu_state.register_bank[0] = x;
+	cpu_state.register_bank[1] = y;
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+
+	uint16_t instruction = 0xD000;
+	instruction |= 0x0 << 8; // VX = V0
+	instruction |= 0x1 << 4; // VY = V1
+	instruction |= 0x5 << 0; // N = 5
+
+	const uint8_t rows[3] = {0xE0, 0x80, 0x80};
+	draw_to_expected_cpu_state(
+		&expected_cpu_state, x, y, rows, sizeof(rows), false);
+
+	draw(&cpu_state, instruction);
+
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 
 int main() {
 	UNITY_BEGIN();
 
 	RUN_TEST(test_clear_screen);
-
 	RUN_TEST(test_draw_blank);
 	RUN_TEST(test_draw_on_top);
+	RUN_TEST(test_draw_no_wrap);
 
 	return UNITY_END();
 }
