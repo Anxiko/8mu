@@ -155,16 +155,34 @@ void test_jump() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_jump_subroutine() {
+	cpu_state.program_counter = 0xABC;
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	expected_cpu_state.program_counter = 0xDEF;
+	expected_cpu_state.stack_size = 1;
+	expected_cpu_state.stack[0] = 0xABC;
+
+	uint16_t instruction = 0x2000;
+	instruction |= 0xDEF; // Address
+
+	jump_subroutine(&cpu_state, instruction);
+
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
 
 int main() {
 	UNITY_BEGIN();
 
 	RUN_TEST(test_clear_screen);
+
 	RUN_TEST(test_draw_blank);
 	RUN_TEST(test_draw_on_top);
 	RUN_TEST(test_draw_no_wrap);
 
 	RUN_TEST(test_jump);
+
+	RUN_TEST(test_jump_subroutine);
 
 	return UNITY_END();
 }
