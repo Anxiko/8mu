@@ -142,6 +142,19 @@ void test_draw_no_wrap() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_jump() {
+	uint16_t instruction = 0x1000;
+	instruction |= 0xABC; // Address
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	expected_cpu_state.program_counter = 0xABC;
+
+	jump(&cpu_state, instruction);
+
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 
 int main() {
 	UNITY_BEGIN();
@@ -150,6 +163,8 @@ int main() {
 	RUN_TEST(test_draw_blank);
 	RUN_TEST(test_draw_on_top);
 	RUN_TEST(test_draw_no_wrap);
+
+	RUN_TEST(test_jump);
 
 	return UNITY_END();
 }
