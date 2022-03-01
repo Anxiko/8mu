@@ -171,6 +171,30 @@ void test_jump_subroutine() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_jump_with_offset() {
+	uint16_t instruction = 0xB000;
+	uint16_t expected_pc = 0x45;
+
+#if OPTION_REGISTER_ARGUMENT_ON_JUMP_WITH_OFFSET
+	instruction |= 0x5 << 8; // VX = V5
+	instruction |= 0x23; // Offset
+	cpu_state.register_bank[5] = 0x45;
+
+	expected_pc += 0x23;
+#else
+	instruction |= 0x123; // Offset
+	cpu_state.register_bank[0] = 0x45;
+
+	expected_pc += 0x123;
+#endif
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	expected_cpu_state.program_counter = expected_pc;
+
+	jump_with_offset(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -183,6 +207,8 @@ int main() {
 	RUN_TEST(test_jump);
 
 	RUN_TEST(test_jump_subroutine);
+
+	RUN_TEST(test_jump_with_offset);
 
 	return UNITY_END();
 }
