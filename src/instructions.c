@@ -87,7 +87,7 @@ void jump_with_offset(CpuState *cpu_state, uint16_t instruction) {
 	offset = extract_immediate_from_xnn(instruction);
 #else
 	base = read_register_bank(cpu_state, 0);
-	offset = extract_register_from_xnn(instruction);
+	offset = extract_immediate_from_nnn(instruction);
 #endif
 
 	uint16_t destination = base + (offset & ADDRESS_BITMASK);
