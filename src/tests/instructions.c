@@ -409,6 +409,27 @@ void test_skip_if_pressed_no_skip() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_copy_register() {
+	uint8_t rx = 3;
+	uint8_t ry = 4;
+	uint16_t rx_val = 0x12;
+	uint16_t ry_val = 0x34;
+
+	uint16_t instruction = 0x8000; // 8XY0
+	instruction |= rx << INSTRUCTION_FIELD_FIRST_REGISTER_XY_OFFSET;
+	instruction |= ry << INSTRUCTION_FIELD_SECOND_REGISTER_XY_OFFSET;
+
+	write_register_bank(&cpu_state, rx, rx_val);
+	write_register_bank(&cpu_state, ry, ry_val);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, rx, ry_val);
+
+	copy_register(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -440,6 +461,8 @@ int main() {
 
 	RUN_TEST(test_skip_if_pressed_skip);
 	RUN_TEST(test_skip_if_pressed_no_skip);
+
+	RUN_TEST(test_copy_register);
 
 	return UNITY_END();
 }
