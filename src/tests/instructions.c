@@ -195,6 +195,18 @@ void test_jump_with_offset() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_return_subroutine() {
+	cpu_state.program_counter = ADDRESS_BITMASK & 0x0BCD;
+	stack_push(&cpu_state, ADDRESS_BITMASK & 0x0ABC);
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	expected_cpu_state.stack_size = 0;
+	expected_cpu_state.program_counter = 0xABC;
+
+	return_subroutine(&cpu_state, 0x00EE);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -209,6 +221,8 @@ int main() {
 	RUN_TEST(test_jump_subroutine);
 
 	RUN_TEST(test_jump_with_offset);
+
+	RUN_TEST(test_return_subroutine);
 
 	return UNITY_END();
 }
