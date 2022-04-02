@@ -331,6 +331,47 @@ void test_skip_if_registers_equal_no_skip() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_skip_if_registers_different_skip() {
+	uint8_t rx = 3; // VX = V3
+	uint8_t ry = 4; // VY = V4
+	uint8_t immediate = 0x12;
+
+	uint16_t instruction = 0x9000; // 5XY0
+	instruction |= rx << INSTRUCTION_FIELD_FIRST_REGISTER_XY_OFFSET;
+	instruction |= ry << INSTRUCTION_FIELD_SECOND_REGISTER_XY_OFFSET;
+
+	write_register_bank(&cpu_state, rx, immediate);
+	write_register_bank(&cpu_state, ry, immediate + 1);
+	cpu_state.program_counter = 0x200;
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	expected_cpu_state.program_counter = 0x202;
+
+	skip_if_registers_different(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_skip_if_registers_different_no_skip() {
+	uint8_t rx = 3; // VX = V3
+	uint8_t ry = 4; // VY = V4
+	uint8_t immediate = 0x12;
+
+	uint16_t instruction = 0x9000; // 5XY0
+	instruction |= rx << INSTRUCTION_FIELD_FIRST_REGISTER_XY_OFFSET;
+	instruction |= ry << INSTRUCTION_FIELD_SECOND_REGISTER_XY_OFFSET;
+
+	write_register_bank(&cpu_state, rx, immediate);
+	write_register_bank(&cpu_state, ry, immediate);
+	cpu_state.program_counter = 0x200;
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+
+	skip_if_registers_different(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -356,6 +397,10 @@ int main() {
 
 	RUN_TEST(test_skip_if_registers_equal_skip);
 	RUN_TEST(test_skip_if_registers_equal_no_skip);
+
+	RUN_TEST(test_skip_if_registers_different_skip);
+	RUN_TEST(test_skip_if_registers_different_no_skip);
+
 
 	return UNITY_END();
 }
