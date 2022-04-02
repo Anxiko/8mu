@@ -372,6 +372,43 @@ void test_skip_if_registers_different_no_skip() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_skip_if_pressed_skip() {
+	uint8_t key = 0xA;
+	uint8_t r = 3; // VX = V3
+
+	uint16_t instruction = 0xE09E; // EX9E
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
+
+	write_register_bank(&cpu_state, r, key);
+	cpu_state.program_counter = 0x200;
+	cpu_state.keyboard[key] = true;
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	expected_cpu_state.program_counter = 0x202;
+
+	skip_pressed(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_skip_if_pressed_no_skip() {
+	uint8_t key = 0xA;
+	uint8_t r = 3; // VX = V3
+
+	uint16_t instruction = 0xE09E; // EX9E
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
+
+	write_register_bank(&cpu_state, r, key);
+	cpu_state.program_counter = 0x200;
+	cpu_state.keyboard[key] = false;
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+
+	skip_pressed(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -401,6 +438,8 @@ int main() {
 	RUN_TEST(test_skip_if_registers_different_skip);
 	RUN_TEST(test_skip_if_registers_different_no_skip);
 
+	RUN_TEST(test_skip_if_pressed_skip);
+	RUN_TEST(test_skip_if_pressed_no_skip);
 
 	return UNITY_END();
 }
