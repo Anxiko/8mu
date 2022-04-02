@@ -448,6 +448,22 @@ void test_set_register_to_immediate() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_set_index_register() {
+	uint16_t immediate = ADDRESS_BITMASK & 0x123;
+
+	uint16_t instruction = 0xA000; // ANNN
+	instruction |= immediate << INSTRUCTION_FIELD_ADDRESS_NNN_OFFSET;
+
+	cpu_state.index_register = 0xABC;
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	expected_cpu_state.index_register = immediate;
+
+	set_index_register(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -483,6 +499,8 @@ int main() {
 	RUN_TEST(test_copy_register);
 
 	RUN_TEST(test_set_register_to_immediate);
+
+	RUN_TEST(test_set_index_register);
 
 	return UNITY_END();
 }
