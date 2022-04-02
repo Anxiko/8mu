@@ -430,6 +430,24 @@ void test_copy_register() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_set_register_to_immediate() {
+	uint8_t r = 3; // VX = V3
+	uint8_t immediate = 0x34;
+
+	uint16_t instruction = 0x6000; // 6XNN
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_XNN_OFFSET;
+	instruction |= immediate << INSTRUCTION_FIELD_IMMEDIATE_XNN_OFFSET;
+
+	write_register_bank(&cpu_state, r, 0x12);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, r, immediate);
+
+	set_register_to_immediate(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -463,6 +481,8 @@ int main() {
 	RUN_TEST(test_skip_if_pressed_no_skip);
 
 	RUN_TEST(test_copy_register);
+
+	RUN_TEST(test_set_register_to_immediate);
 
 	return UNITY_END();
 }
