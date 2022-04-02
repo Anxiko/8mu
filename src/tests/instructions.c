@@ -248,6 +248,48 @@ void test_skip_if_equal_to_immediate_no_skip() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_skip_if_different_to_immediate_no_skip() {
+	uint8_t immediate = 0x12;
+	uint8_t r = 3; // VX = V3
+
+	uint16_t instruction = 0x4000; // 4XNN
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_XNN_OFFSET;
+	instruction |= immediate << INSTRUCTION_FIELD_IMMEDIATE_XNN_OFFSET;
+
+
+	cpu_state.program_counter = 0x200;
+	write_register_bank(&cpu_state, r, immediate);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+
+
+	skip_if_different_from_immediate(&cpu_state, instruction);
+
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_skip_if_different_to_immediate_skip() {
+	uint8_t immediate = 0x12;
+	uint8_t r = 3; // VX = V3
+
+	uint16_t instruction = 0x4000; // 4XNN
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_XNN_OFFSET;
+	instruction |= immediate << INSTRUCTION_FIELD_IMMEDIATE_XNN_OFFSET;
+
+
+	cpu_state.program_counter = 0x200;
+	write_register_bank(&cpu_state, r, immediate + 1);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	expected_cpu_state.program_counter = 0x202;
+
+	skip_if_different_from_immediate(&cpu_state, instruction);
+
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -267,6 +309,9 @@ int main() {
 
 	RUN_TEST(test_skip_if_equal_to_immediate_skip);
 	RUN_TEST(test_skip_if_equal_to_immediate_no_skip);
+
+	RUN_TEST(test_skip_if_different_to_immediate_skip);
+	RUN_TEST(test_skip_if_different_to_immediate_no_skip);
 
 	return UNITY_END();
 }
