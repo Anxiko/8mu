@@ -558,6 +558,44 @@ void test_load_all_registers_from_memory() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_add_immediate_to_register() {
+	uint8_t r = 0x0; // VX = V0
+	uint8_t r0 = 0x0EE; // V0 = 0xF0
+	uint8_t immediate = 0x11;
+
+	uint16_t instruction = 0x7000; // 7XNN
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_XNN_OFFSET;
+	instruction |= immediate << INSTRUCTION_FIELD_IMMEDIATE_XNN_OFFSET;
+
+	write_register_bank(&cpu_state, r, r0);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, r, r0 + immediate);
+
+	add_immediate_to_register(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_add_immediate_to_register_overflow() {
+	uint8_t r = 0x0; // VX = V0
+	uint8_t r0 = 0x0EE; // V0 = 0xF0
+	uint8_t immediate = 0x12;
+
+	uint16_t instruction = 0x7000; // 7XNN
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_XNN_OFFSET;
+	instruction |= immediate << INSTRUCTION_FIELD_IMMEDIATE_XNN_OFFSET;
+
+	write_register_bank(&cpu_state, r, r0);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, r, r0 + immediate);
+
+	add_immediate_to_register(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -601,6 +639,9 @@ int main() {
 
 	RUN_TEST(test_load_one_register_from_memory);
 	RUN_TEST(test_load_all_registers_from_memory);
+
+	RUN_TEST(test_add_immediate_to_register);
+	RUN_TEST(test_add_immediate_to_register_overflow);
 
 	return UNITY_END();
 }
