@@ -20,7 +20,7 @@ void tearDown() {
 uint8_t reorder_byte_bits(uint8_t v) {
 	uint8_t rv = 0;
 	for (int i = 0; i < 8; ++i) {
-		rv |= ((v >> i) & 1) << (7-i);
+		rv |= ((v >> i) & 1) << (7 - i);
 	}
 	return rv;
 }
@@ -118,7 +118,7 @@ void test_draw_on_top() {
 
 // Draw outside the screen, drawings shouldn't warp
 void test_draw_no_wrap() {
-	const uint8_t x = SCREEN_WIDTH - 3 , y = SCREEN_HEIGHT - 3;
+	const uint8_t x = SCREEN_WIDTH - 3, y = SCREEN_HEIGHT - 3;
 
 	uint16_t character_zero = character_address(0);
 	cpu_state.index_register = character_zero;
@@ -481,6 +481,9 @@ void test_dump_one_register_to_memory() {
 	for (uint8_t i = 0; i <= r; ++i) {
 		write_byte_memory(&expected_cpu_state, index + i, 0xF0 | i);
 	}
+#if OPTION_DUMP_INCREMENTS_I
+	write_index_register(&expected_cpu_state, index + r + 1);
+#endif
 
 	save_registers(&cpu_state, instruction);
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
@@ -503,6 +506,9 @@ void test_dump_all_registers_to_memory() {
 	for (uint8_t i = 0; i <= r; ++i) {
 		write_byte_memory(&expected_cpu_state, index + i, 0xF0 | i);
 	}
+#if OPTION_DUMP_INCREMENTS_I
+	write_index_register(&expected_cpu_state, index + r + 1);
+#endif
 
 	save_registers(&cpu_state, instruction);
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));

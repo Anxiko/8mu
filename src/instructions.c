@@ -261,7 +261,7 @@ void save_registers(CpuState *cpu_state, uint16_t instruction) {
 	}
 
 #if OPTION_DUMP_INCREMENTS_I
-	set_index_register((base_address + x + 1) & ADDRESS_BITMASK);
+	write_index_register(cpu_state, (base_address + x + 1) & ADDRESS_BITMASK);
 #endif
 }
 
