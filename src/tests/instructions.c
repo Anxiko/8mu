@@ -466,10 +466,10 @@ void test_set_index_register() {
 
 void test_dump_one_register_to_memory() {
 	uint8_t r = 0x0; // VX = V0
-	uint16_t index = 0x200; // I = 0x200
+	uint16_t index = 0x200 & ADDRESS_BITMASK; // I = 0x200
 
-	uint16_t instruction = 0xF055; // FXNN
-	instruction |= r << INSTRUCTION_FIELD_REGISTER_XNN_OFFSET;
+	uint16_t instruction = 0xF055; // FX55
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
 
 	for (uint8_t i = 0; i < REGISTERS; ++i) {
 		write_register_bank(&cpu_state, i, 0xF0 | i);
@@ -491,10 +491,10 @@ void test_dump_one_register_to_memory() {
 
 void test_dump_all_registers_to_memory() {
 	uint8_t r = 0xF; // VX = VF
-	uint16_t index = 0x200; // I = 0x200
+	uint16_t index = 0x200 & ADDRESS_BITMASK; // I = 0x200
 
 	uint16_t instruction = 0xF055; // FX55
-	instruction |= r << INSTRUCTION_FIELD_REGISTER_XNN_OFFSET;
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
 
 	for (uint8_t i = 0; i < REGISTERS; ++i) {
 		write_register_bank(&cpu_state, i, 0xF0 | i);
@@ -511,6 +511,50 @@ void test_dump_all_registers_to_memory() {
 #endif
 
 	save_registers(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_load_one_register_from_memory() {
+	uint8_t r = 0x0; // VX = V0
+	uint16_t index = 0x200 & ADDRESS_BITMASK; // I = 0x200
+
+	uint16_t instruction = 0xF065; // FX65
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
+
+	write_index_register(&cpu_state, index);
+	for (uint8_t i = 0; i <= REGISTERS; ++i) {
+		write_byte_memory(&cpu_state, index + i, 0xF0 | i);
+	}
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	for (uint8_t i = 0; i <= r; ++i) {
+		write_register_bank(&expected_cpu_state, i, 0xF0 | i);
+	}
+
+	load_registers(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_load_all_registers_from_memory() {
+	uint8_t r = 0xF; // VX = VF
+	uint16_t index = 0x200 & ADDRESS_BITMASK; // I = 0x200
+
+	uint16_t instruction = 0xF065; // FX65
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
+
+	write_index_register(&cpu_state, index);
+	for (uint8_t i = 0; i <= REGISTERS; ++i) {
+		write_byte_memory(&cpu_state, index + i, 0xF0 | i);
+	}
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	for (uint8_t i = 0; i <= r; ++i) {
+		write_register_bank(&expected_cpu_state, i, 0xF0 | i);
+	}
+
+	load_registers(&cpu_state, instruction);
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
@@ -554,6 +598,9 @@ int main() {
 
 	RUN_TEST(test_dump_one_register_to_memory);
 	RUN_TEST(test_dump_all_registers_to_memory);
+
+	RUN_TEST(test_load_one_register_from_memory);
+	RUN_TEST(test_load_all_registers_from_memory);
 
 	return UNITY_END();
 }
