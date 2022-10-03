@@ -310,7 +310,8 @@ void add_immediate_to_register(CpuState *cpu_state, uint16_t instruction) {
  * Otherwise, do not alter the carry flag at all.
  */
 void add_to_index(CpuState *cpu_state, uint16_t instruction) {
-	uint8_t vx = extract_register_from_x(instruction);
+	uint8_t rx = extract_register_from_x(instruction);
+	uint8_t vx = read_register_bank(cpu_state, rx);
 	uint16_t i_val = read_index_register(cpu_state);
 
 	uint16_t result = i_val + vx;
