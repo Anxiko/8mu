@@ -579,7 +579,7 @@ void test_add_immediate_to_register() {
 
 void test_add_immediate_to_register_overflow() {
 	uint8_t r = 0x0; // VX = V0
-	uint8_t r0 = 0x0EE; // V0 = 0xF0
+	uint8_t r0 = 0xEE; // V0 = 0xF0
 	uint8_t immediate = 0x12;
 
 	uint16_t instruction = 0x7000; // 7XNN
@@ -593,6 +593,49 @@ void test_add_immediate_to_register_overflow() {
 	write_register_bank(&expected_cpu_state, r, r0 + immediate);
 
 	add_immediate_to_register(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_add_immediate_to_index() {
+	uint8_t r = 0x0; // VX = V0
+	uint8_t r0 = 0xEE; // V0 = 0xEE
+
+	uint16_t instruction =0xF01E; // FX1E
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
+	write_index_register(&cpu_state, 0xF11);
+	write_register_bank(&cpu_state, r, r0);
+#if OPTION_OVERFLOW_ON_ADD_TO_INDEX
+	write_register_bank(&cpu_state, STATUS_REGISTER, 1);
+#endif
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_index_register(&expected_cpu_state, 0xFFF);
+#if OPTION_OVERFLOW_ON_ADD_TO_INDEX
+	write_register_bank(&expected_cpu_state, STATUS_REGISTER, 0);
+#endif
+
+	add_to_index(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_add_immediate_to_index_overflow() {
+	uint8_t r = 0x0; // VX = V0
+	uint8_t r0 = 0xEE; // V0 = 0xEE
+
+	uint16_t instruction =0xF01E; // FX1E
+	instruction |= r << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
+	write_index_register(&cpu_state, 0xF12);
+	write_register_bank(&cpu_state, r, r0);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_index_register(&expected_cpu_state, 0x0);
+#if OPTION_OVERFLOW_ON_ADD_TO_INDEX
+	write_register_bank(&expected_cpu_state, STATUS_REGISTER, 1);
+#endif
+
+	add_to_index(&cpu_state, instruction);
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
@@ -642,6 +685,9 @@ int main() {
 
 	RUN_TEST(test_add_immediate_to_register);
 	RUN_TEST(test_add_immediate_to_register_overflow);
+
+	RUN_TEST(test_add_immediate_to_index);
+	RUN_TEST(test_add_immediate_to_index_overflow);
 
 	return UNITY_END();
 }
