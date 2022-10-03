@@ -323,7 +323,7 @@ void add_to_index(CpuState *cpu_state, uint16_t instruction) {
 	} else {
 		carry_flag = 0;
 	}
-	write_register_bank(STATUS_REGISTER, carry_flag);
+	write_register_bank(cpu_state, STATUS_REGISTER, carry_flag);
 #endif
 
 	write_index_register(cpu_state, result & ADDRESS_BITMASK);
