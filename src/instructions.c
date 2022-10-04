@@ -330,7 +330,7 @@ void add_to_index(CpuState *cpu_state, uint16_t instruction) {
 }
 
 /*
- * 7XNN
+ * 8XY4
  * ADD VX VY
  * Set VX to VX + VY. Set the carry flag to 1 on overflow, otherwise set it to 0.
  */

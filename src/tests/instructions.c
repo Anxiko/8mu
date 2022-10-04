@@ -639,6 +639,53 @@ void test_add_immediate_to_index_overflow() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_add_register_to_register() {
+	uint8_t x = 0x1; // VX = V1
+	uint8_t y = 0x2; // VY = V2
+
+	uint8_t xv = 0x12; // VX = 0x12
+	uint8_t yv = 0x34; // VY = 0x34
+
+	uint16_t instruction = 0x8004; // 0x8XY4
+	instruction |= x << INSTRUCTION_FIELD_FIRST_REGISTER_XY_OFFSET;
+	instruction |= y << INSTRUCTION_FIELD_SECOND_REGISTER_XY_OFFSET;
+
+	write_register_bank(&cpu_state, x, xv);
+	write_register_bank(&cpu_state, y, yv);
+	write_register_bank(&cpu_state, STATUS_REGISTER, 1);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, x, 0x46);
+	write_register_bank(&expected_cpu_state, STATUS_REGISTER, 0);
+
+	add_register_to_register(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_add_register_to_register_overflow() {
+	uint8_t x = 0x1; // VX = V1
+	uint8_t y = 0x2; // VY = V2
+
+	uint8_t xv = 0xEE; // VX = 0xEE
+	uint8_t yv = 0x12; // VY = 0x12
+
+	uint16_t instruction = 0x8004; // 0x8XY4
+	instruction |= x << INSTRUCTION_FIELD_FIRST_REGISTER_XY_OFFSET;
+	instruction |= y << INSTRUCTION_FIELD_SECOND_REGISTER_XY_OFFSET;
+
+	write_register_bank(&cpu_state, x, xv);
+	write_register_bank(&cpu_state, y, yv);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, x, 0x0);
+	write_register_bank(&expected_cpu_state, STATUS_REGISTER, 1);
+
+	add_register_to_register(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -688,6 +735,9 @@ int main() {
 
 	RUN_TEST(test_add_immediate_to_index);
 	RUN_TEST(test_add_immediate_to_index_overflow);
+
+	RUN_TEST(test_add_register_to_register);
+	RUN_TEST(test_add_register_to_register_overflow);
 
 	return UNITY_END();
 }
