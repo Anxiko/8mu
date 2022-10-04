@@ -365,7 +365,7 @@ void sub_register_from_register(CpuState *cpu_state, uint16_t instruction) {
 	uint8_t vx_val = read_register_bank(cpu_state, vx);
 	uint8_t vy_val = read_register_bank(cpu_state, vy);
 
-	if (vx > vy) {
+	if (vx_val > vy_val) {
 		write_register_bank(cpu_state, STATUS_REGISTER, 1);
 	} else {
 		write_register_bank(cpu_state, STATUS_REGISTER, 0);
@@ -387,7 +387,7 @@ void negative_sub_register_from_register(CpuState *cpu_state, uint16_t instructi
 	uint8_t vx_val = read_register_bank(cpu_state, vx);
 	uint8_t vy_val = read_register_bank(cpu_state, vy);
 
-	if (vy > vx) {
+	if (vy_val > vx_val) {
 		write_register_bank(cpu_state, STATUS_REGISTER, 1);
 	} else {
 		write_register_bank(cpu_state, STATUS_REGISTER, 0);
