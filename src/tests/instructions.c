@@ -780,6 +780,47 @@ void test_negative_sub_register_to_register_underflow() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_decimal_decode_3_digits() {
+	uint8_t x = 0x1; // VX = V1
+
+	uint8_t xv = 123; // VX = 123
+
+	uint16_t instruction = 0xF033; // FX33
+	instruction |= x << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
+
+	write_register_bank(&cpu_state, x, xv);
+	write_index_register(&cpu_state, 0x200);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_byte_memory(&expected_cpu_state, 0x200, 1);
+	write_byte_memory(&expected_cpu_state, 0x201, 2);
+	write_byte_memory(&expected_cpu_state, 0x202, 3);
+
+	decimal_decode(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_decimal_decode_2_digits() {
+	uint8_t x = 0x1; // VX = V1
+
+	uint8_t xv = 23; // VX = 123
+
+	uint16_t instruction = 0xF033; // FX33
+	instruction |= x << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
+
+	write_register_bank(&cpu_state, x, xv);
+	write_index_register(&cpu_state, 0x200);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_byte_memory(&expected_cpu_state, 0x201, 2);
+	write_byte_memory(&expected_cpu_state, 0x202, 3);
+
+	decimal_decode(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -838,6 +879,9 @@ int main() {
 
 	RUN_TEST(test_negative_sub_register_to_register);
 	RUN_TEST(test_negative_sub_register_to_register_underflow);
+
+	RUN_TEST(test_decimal_decode_3_digits);
+	RUN_TEST(test_decimal_decode_2_digits);
 
 	return UNITY_END();
 }
