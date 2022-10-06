@@ -843,6 +843,28 @@ void test_bitwise_or() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_bitwise_and() {
+	uint8_t x = 0x1; //VX = V1
+	uint8_t y = 0x2; //VX = V2
+
+	uint8_t xv = 0b10101100;
+	uint8_t yv = 0b11001010;
+
+	uint16_t instruction = 0x8002; // 8XY2
+	instruction |= x << INSTRUCTION_FIELD_FIRST_REGISTER_XY_OFFSET;
+	instruction |= y << INSTRUCTION_FIELD_SECOND_REGISTER_XY_OFFSET;
+
+	write_register_bank(&cpu_state, x, xv);
+	write_register_bank(&cpu_state, y, yv);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, x, 0b10001000);
+
+	bitwise_and(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -906,6 +928,8 @@ int main() {
 	RUN_TEST(test_decimal_decode_2_digits);
 
 	RUN_TEST(test_bitwise_or);
+
+	RUN_TEST(test_bitwise_and);
 
 	return UNITY_END();
 }
