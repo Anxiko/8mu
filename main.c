@@ -14,12 +14,15 @@
 
 #define MIXER_CHUNK_SIZE 1024
 #define MIXER_CHANNELS_REQUESTED 1
+#define ENV_VOLUME "CHIP8_VOLUME"
 
 
 uint8_t rom[ROM_SIZE];
 CpuState cpu_state;
 
 void quit_on_sdl_error(bool error, const char *error_msg);
+
+void set_volume();
 
 int main(int argc, const char *argv[]) {
 	if (argc != 2) {
@@ -47,6 +50,8 @@ int main(int argc, const char *argv[]) {
 		fprintf(stderr, "Failed to load sound effect");
 		exit(EXIT_FAILURE);
 	}
+	Mix_Volume(MIXER_CHANNEL, 1);
+	set_volume();
 
 	SDL_Window *window = SDL_CreateWindow(
 		"Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -64,7 +69,7 @@ int main(int argc, const char *argv[]) {
 		return EXIT_FAILURE;
 	}
 	size_t bytes_read = fread(rom, 1, ROM_SIZE, file_ptr);
-	printf("Read %d byte(s)\n", bytes_read);
+	printf("Read %zu byte(s)\n", bytes_read);
 	fclose(file_ptr);
 
 	init_state(&cpu_state, rom);
@@ -112,5 +117,18 @@ void quit_on_sdl_error(bool error, const char *error_msg) {
 	if (error) {
 		printf("%s: %s", error_msg, SDL_GetError());
 		exit(EXIT_FAILURE);
+	}
+}
+
+void set_volume() {
+	char const *env = getenv(ENV_VOLUME);
+
+	if (env != NULL) {
+		char *end_ptr = NULL;
+		long volume = strtol(env, &end_ptr, 10);
+		if (end_ptr != env) {
+			Mix_Volume(MIXER_CHANNEL, volume);
+		}
+
 	}
 }
