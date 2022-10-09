@@ -4,6 +4,7 @@
 #include "screen.h"
 #include "debug.h"
 #include "instructions.h"
+#include "mock_time_millis.h"
 
 CpuState cpu_state;
 
@@ -600,7 +601,7 @@ void test_add_immediate_to_index() {
 	uint8_t r = 0x0; // VX = V0
 	uint8_t r0 = 0xEE; // V0 = 0xEE
 
-	uint16_t instruction =0xF01E; // FX1E
+	uint16_t instruction = 0xF01E; // FX1E
 	instruction |= r << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
 	write_index_register(&cpu_state, 0xF11);
 	write_register_bank(&cpu_state, r, r0);
@@ -623,7 +624,7 @@ void test_add_immediate_to_index_overflow() {
 	uint8_t r = 0x0; // VX = V0
 	uint8_t r0 = 0xEE; // V0 = 0xEE
 
-	uint16_t instruction =0xF01E; // FX1E
+	uint16_t instruction = 0xF01E; // FX1E
 	instruction |= r << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
 	write_index_register(&cpu_state, 0xF12);
 	write_register_bank(&cpu_state, r, r0);
@@ -998,11 +999,32 @@ void test_set_register_to_bitmasked_rand() {
 	instruction |= x << INSTRUCTION_FIELD_REGISTER_XNN_OFFSET;
 	instruction |= mask << INSTRUCTION_FIELD_IMMEDIATE_XNN_OFFSET;
 
-	CpuState  expected_cpu_state;
+	CpuState expected_cpu_state;
 	copy_state(&expected_cpu_state, &cpu_state);
 	write_register_bank(&expected_cpu_state, x, 0xC4);
 
 	set_register_to_bitmasked_rand(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_read_delay() {
+	uint8_t x = 0x1;
+
+	uint16_t instruction = 0xF017; // FX07
+
+	instruction |= x << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
+
+	mock_set_time_millis(100); // Time can't be 0 when setting a timer, or it'll be interpreted as not being set
+	write_delay_timer(&cpu_state, 50);
+
+	// After half a second, timer should have decremented by 60/2 = 30 ticks, which leaves 20 out of the original 50 remaining
+	mock_set_time_millis(600);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, x, 20);
+
+	read_delay(&cpu_state, instruction);
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
@@ -1081,6 +1103,8 @@ int main() {
 	RUN_TEST(test_shift_right_underflow);
 
 	RUN_TEST(test_set_register_to_bitmasked_rand);
+
+	RUN_TEST(test_read_delay);
 
 	return UNITY_END();
 }
