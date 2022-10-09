@@ -3,6 +3,7 @@ project(chip8 C)
 
 set(CMAKE_C_STANDARD 11)
 
+
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 set(SDL2_PATH $ENV{SDL2_PATH})
@@ -77,4 +78,5 @@ target_link_libraries(
 		chip8
 		${SDL2_LIBRARY}
 		${SDL2_MIXER_LIBRARY}
+		-static gcc stdc++ winpthread -dynamic
 )
