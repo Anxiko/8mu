@@ -26,7 +26,8 @@ void set_volume();
 
 int main(int argc, const char *argv[]) {
 	if (argc != 2) {
-		fprintf(stderr, "Invalid number of arguments");
+		fprintf(stderr, "Invalid number of arguments\n");
+		printf("Usage: 8mu path/to/chip8_rom.ch8\n");
 		return EXIT_FAILURE;
 	}
 
