@@ -1087,7 +1087,7 @@ void test_wait_for_key_pressed() {
 	uint16_t instruction = 0xF00A; // FX0A
 	instruction |= x << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
 
-	cpu_state.keyboard[k] = true;
+	set_key_pressed(&cpu_state, k, true);
 
 	CpuState expected_cpu_state;
 	copy_state(&expected_cpu_state, &cpu_state);
