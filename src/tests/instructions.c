@@ -1047,6 +1047,25 @@ void test_set_delay() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_set_sound() {
+	uint8_t x = 0x1;
+	uint8_t xv = 100;
+
+	uint16_t instruction = 0xF018; // FX18
+	instruction = x << INSTRUCTION_FIELD_REGISTER_X_OFFSET;
+
+	write_register_bank(&cpu_state, x, xv);
+
+	mock_set_time_millis(100);
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_sound_timer(&expected_cpu_state, 100);
+
+	set_sound(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -1126,6 +1145,8 @@ int main() {
 	RUN_TEST(test_read_delay);
 
 	RUN_TEST(test_set_delay);
+
+	RUN_TEST(test_set_sound);
 
 	return UNITY_END();
 }
