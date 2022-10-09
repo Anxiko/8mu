@@ -887,6 +887,55 @@ void test_bitwise_xor() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_shift_left() {
+	uint8_t x = 0x1;
+	uint8_t y = 0x2;
+
+	uint8_t v = 0b01010101;
+#if OPTION_USE_EXTRA_REGISTER_ON_SHIFT
+	write_register_bank(&cpu_state, y, v);
+#else
+	write_register_bank(&cpu_state, x, v);
+#endif
+	write_register_bank(&cpu_state, STATUS_REGISTER, 1);
+
+	uint16_t instruction = 0x800E; // 8XYE
+	instruction |= x << INSTRUCTION_FIELD_FIRST_REGISTER_XY_OFFSET;
+	instruction |= y << INSTRUCTION_FIELD_SECOND_REGISTER_XY_OFFSET;
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, x, 0b10101010);
+	write_register_bank(&expected_cpu_state, STATUS_REGISTER, 0);
+
+	shift_left(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
+void test_shift_left_overflow() {
+	uint8_t x = 0x1;
+	uint8_t y = 0x2;
+
+	uint8_t v = 0b10101010;
+#if OPTION_USE_EXTRA_REGISTER_ON_SHIFT
+	write_register_bank(&cpu_state, y, v);
+#else
+	write_register_bank(&cpu_state, x, v);
+#endif
+
+	uint16_t instruction = 0x800E; // 8XYE
+	instruction |= x << INSTRUCTION_FIELD_FIRST_REGISTER_XY_OFFSET;
+	instruction |= y << INSTRUCTION_FIELD_SECOND_REGISTER_XY_OFFSET;
+
+	CpuState expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, x, 0b01010100);
+	write_register_bank(&expected_cpu_state, STATUS_REGISTER, 1);
+
+	shift_left(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -954,6 +1003,9 @@ int main() {
 	RUN_TEST(test_bitwise_and);
 
 	RUN_TEST(test_bitwise_xor);
+
+	RUN_TEST(test_shift_left);
+	RUN_TEST(test_shift_left_overflow);
 
 	return UNITY_END();
 }
