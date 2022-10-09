@@ -986,6 +986,26 @@ void test_shift_right_underflow() {
 	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
 }
 
+void test_set_register_to_bitmasked_rand() {
+	srand(9943u); // NOLINT(cert-msc51-cpp)
+	// Resulting random byte should be 0xFC
+
+	uint8_t x = 0x1;
+	uint8_t xv = 0b10101010;
+	uint8_t mask = 0xC7;
+
+	uint16_t instruction = 0xC000; // CXNN
+	instruction |= x << INSTRUCTION_FIELD_REGISTER_XNN_OFFSET;
+	instruction |= mask << INSTRUCTION_FIELD_IMMEDIATE_XNN_OFFSET;
+
+	CpuState  expected_cpu_state;
+	copy_state(&expected_cpu_state, &cpu_state);
+	write_register_bank(&expected_cpu_state, x, 0xC4);
+
+	set_register_to_bitmasked_rand(&cpu_state, instruction);
+	TEST_ASSERT(state_equals(&expected_cpu_state, &cpu_state));
+}
+
 int main() {
 	UNITY_BEGIN();
 
@@ -1059,6 +1079,8 @@ int main() {
 
 	RUN_TEST(test_shift_right);
 	RUN_TEST(test_shift_right_underflow);
+
+	RUN_TEST(test_set_register_to_bitmasked_rand);
 
 	return UNITY_END();
 }
