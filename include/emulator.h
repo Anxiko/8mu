@@ -5,6 +5,7 @@
 
 #include "state.h"
 #include "screen.h"
+#include "keyboard.h"
 #include "SDL.h"
 #include "SDL_mixer.h"
 

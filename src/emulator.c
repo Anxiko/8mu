@@ -52,9 +52,9 @@ void update_keyboard_state(CpuState *cpu_state) {
 	for (uint8_t key = 0; key < NUMBER_OF_KEYS; ++key) {
 		SDL_Keycode keycode = KEYBOARD_CODES[key];
 		if (sdl_keyboard_state[keycode]) {
-			cpu_state->keyboard[key] = true;
+			set_key_pressed(cpu_state, key, true);
 		} else {
-			cpu_state->keyboard[key] = false;
+			set_key_pressed(cpu_state, key, false);
 		}
 	}
 }

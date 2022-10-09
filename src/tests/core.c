@@ -34,6 +34,13 @@ void test_beeper_set_beeper_state() {
 	}
 }
 
+void test_set_pressed() {
+	set_key_pressed(&cpu_state, 2, true);
+	TEST_ASSERT_TRUE(cpu_state.keyboard[2]);
+	set_key_pressed(&cpu_state, 2, false);
+	TEST_ASSERT_FALSE(cpu_state.keyboard[2]);
+}
+
 void test_keyboard_is_key_pressed() {
 	cpu_state.keyboard[4] = true;
 	cpu_state.keyboard[6] = true;
@@ -105,10 +112,10 @@ void test_register_index_register() {
 
 void test_register_bank() {
 	uint8_t expected_register_bank[REGISTERS] = {
-			0x10, 0x11, 0x12, 0x13,
-			0x14, 0x15, 0x16, 0x17,
-			0x18, 0x19, 0x1A, 0x1B,
-			0x1C, 0x1D, 0x1E, 0x1F
+		0x10, 0x11, 0x12, 0x13,
+		0x14, 0x15, 0x16, 0x17,
+		0x18, 0x19, 0x1A, 0x1B,
+		0x1C, 0x1D, 0x1E, 0x1F
 	};
 	CpuState expected_cpu_state;
 	init_state(&expected_cpu_state, NULL);
@@ -138,10 +145,10 @@ void test_screen_fill_screen() {
 
 void test_screen_read_pixel_from_screen() {
 	const uint8_t display[SCREEN_SIZE_BYTES] = {
-			0b10101010,
-			// Jump to the next row
-			0, 0, 0, 0, 0, 0, 0,
-			0b01010101
+		0b10101010,
+		// Jump to the next row
+		0, 0, 0, 0, 0, 0, 0,
+		0b01010101
 	};
 	memcpy(cpu_state.display, display, SCREEN_SIZE_BYTES);
 
@@ -156,10 +163,10 @@ void test_screen_write_pixel_to_screen() {
 	CpuState expected_cpu_state;
 	init_state(&expected_cpu_state, NULL);
 	const uint8_t display[SCREEN_SIZE_BYTES] = {
-			0b10101010,
-			// Jump to the next row
-			0, 0, 0, 0, 0, 0, 0,
-			0b01010101
+		0b10101010,
+		// Jump to the next row
+		0, 0, 0, 0, 0, 0, 0,
+		0b01010101
 	};
 	memcpy(expected_cpu_state.display, display, SCREEN_SIZE_BYTES);
 
@@ -178,10 +185,10 @@ void test_stack() {
 	CpuState expected_cpu_state;
 	init_state(&expected_cpu_state, NULL);
 	uint16_t expected_stack[STACK_SIZE] = {
-			0x10, 0x11, 0x12, 0x13,
-			0x14, 0x15, 0x16, 0x17,
-			0x18, 0x19, 0x1A, 0x1B,
-			0x1C, 0x1D, 0x1E, 0x1F
+		0x10, 0x11, 0x12, 0x13,
+		0x14, 0x15, 0x16, 0x17,
+		0x18, 0x19, 0x1A, 0x1B,
+		0x1C, 0x1D, 0x1E, 0x1F
 	};
 	memcpy(expected_cpu_state.stack, expected_stack, 2 * STACK_SIZE);
 	expected_cpu_state.stack_size = STACK_SIZE;
@@ -303,6 +310,7 @@ int main() {
 
 	RUN_TEST(test_beeper_set_beeper_state);
 
+	RUN_TEST(test_set_pressed);
 	RUN_TEST(test_keyboard_is_key_pressed);
 	RUN_TEST(test_keyboard_any_key_pressed);
 

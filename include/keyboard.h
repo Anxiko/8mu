@@ -8,8 +8,10 @@
 
 #include "state.h"
 
+void set_key_pressed(CpuState *cpu_state, uint8_t key, bool status);
+
 bool is_key_pressed(CpuState *cpu_state, uint8_t key);
 
-bool any_key_pressed(CpuState  *cpu_state, uint8_t *pressed_key);
+bool any_key_pressed(CpuState *cpu_state, uint8_t *pressed_key);
 
 #endif //CHIP8_KEYBOARD_H

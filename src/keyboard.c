@@ -1,5 +1,9 @@
 #include "keyboard.h"
 
+void set_key_pressed(CpuState *cpu_state, uint8_t key, bool status) {
+	cpu_state->keyboard[key] = status;
+}
+
 bool is_key_pressed(CpuState *cpu_state, uint8_t key) {
 	return cpu_state->keyboard[key];
 }
